@@ -16,15 +16,97 @@ type DocPage = {
   content: string
 }
 
-const pages: DocPage[] = []
-
 const groups = [
-  { title: '开始使用', pages: ['zh/getting-started/introduction'] },
+  {
+    title: '开始使用',
+    pages: [
+      'zh/getting-started/introduction',
+      'zh/getting-started/quick-start',
+      'zh/getting-started/key-concepts',
+    ],
+  },
+  {
+    title: '版本与商业模式',
+    pages: ['zh/editions/community', 'zh/editions/cloud', 'zh/editions/education'],
+  },
+  {
+    title: '部署与安全',
+    pages: ['zh/deployment/overview', 'zh/deployment/private-deployment', 'zh/security/data-boundary'],
+  },
+  {
+    title: '校园场景',
+    pages: ['zh/scenarios/teachers', 'zh/scenarios/students', 'zh/scenarios/administration'],
+  },
+  {
+    title: 'API',
+    pages: ['zh/api/overview'],
+  },
+  {
+    title: 'English',
+    pages: ['en/getting-started/introduction'],
+  },
 ]
+
+const mdxModules = {
+  ...import.meta.glob<string>('../zh/**/*.mdx', { query: '?raw', import: 'default', eager: true }),
+  ...import.meta.glob<string>('../en/**/*.mdx', { query: '?raw', import: 'default', eager: true }),
+}
+
+const groupBySlug = new Map(groups.flatMap((group) => group.pages.map((slug) => [slug, group.title])))
+const orderBySlug = new Map(groups.flatMap((group) => group.pages.map((slug, index) => [slug, index])))
+
+const pages: DocPage[] = Object.entries(mdxModules)
+  .map(([path, source]) => {
+    const slug = path.replace(/^\.\.\//, '').replace(/\.mdx$/, '')
+    const parsed = parseMdx(source)
+
+    return {
+      slug,
+      group: groupBySlug.get(slug) ?? '文档',
+      ...parsed,
+    }
+  })
+  .sort((a, b) => {
+    const groupDiff = groups.findIndex((group) => group.title === a.group) - groups.findIndex((group) => group.title === b.group)
+
+    if (groupDiff !== 0) {
+      return groupDiff
+    }
+
+    return (orderBySlug.get(a.slug) ?? 999) - (orderBySlug.get(b.slug) ?? 999)
+  })
+
+const fallbackPage: DocPage = pages.find((page) => page.slug === 'zh/getting-started/introduction') ?? {
+  slug: 'zh/getting-started/introduction',
+  title: 'QeEdu Docs',
+  description: '启育文档中心',
+  group: '开始使用',
+  content: '## 概览\n\n文档正在整理中。',
+}
+
+function parseMdx(source: string) {
+  const frontmatter = source.match(/^---\n([\s\S]*?)\n---\n?/)
+  const metadata: Record<string, string> = {}
+
+  if (frontmatter) {
+    for (const line of frontmatter[1].split('\n')) {
+      const pair = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/)
+      if (pair) {
+        metadata[pair[1]] = pair[2].replace(/^["']|["']$/g, '')
+      }
+    }
+  }
+
+  return {
+    title: metadata.title ?? 'Untitled',
+    description: metadata.description ?? '',
+    content: source.slice(frontmatter?.[0].length ?? 0).trim(),
+  }
+}
 
 function AppLayout() {
   const location = useLocation()
-  const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? pages[0]
+  const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
 
   return (
     <div className="docs-app">
@@ -115,4 +197,3 @@ function DocArticle({ page }: { page: DocPage }) {
 export function App() {
   return <AppLayout />
 }
-
