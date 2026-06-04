@@ -1,0 +1,82 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "QeEdu Docs",
+  "colors": {
+    "primary": "#0d7d5f",
+    "light": "#dfffd0",
+    "dark": "#083d31"
+  },
+  "description": "启育 QeEdu 文档，覆盖快速开始、版本规划、私有化部署、数据安全和校园场景。",
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "languages": [
+      {
+        "language": "zh",
+        "default": true,
+        "versions": [
+          {
+            "version": "Latest",
+            "groups": [
+              {
+                "group": "开始使用",
+                "pages": [
+                  "zh/getting-started/introduction",
+                  "zh/getting-started/quick-start",
+                  "zh/getting-started/key-concepts"
+                ]
+              },
+              {
+                "group": "版本与商业模式",
+                "pages": [
+                  "zh/editions/community",
+                  "zh/editions/cloud",
+                  "zh/editions/education"
+                ]
+              },
+              {
+                "group": "部署与安全",
+                "pages": [
+                  "zh/deployment/overview",
+                  "zh/deployment/private-deployment",
+                  "zh/security/data-boundary"
+                ]
+              },
+              {
+                "group": "校园场景",
+                "pages": [
+                  "zh/scenarios/teachers",
+                  "zh/scenarios/students",
+                  "zh/scenarios/administration"
+                ]
+              },
+              {
+                "group": "API",
+                "pages": [
+                  "zh/api/overview"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "en",
+        "versions": [
+          {
+            "version": "Latest",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "en/getting-started/introduction"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
