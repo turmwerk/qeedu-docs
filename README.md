@@ -55,10 +55,21 @@
 
 - 快速开始：产品定位、快速体验、关键概念。
 - 版本与商业模式：Community、Cloud、Education。
-- 部署与安全：Cloudflare Pages、环境变量、私有化部署、数据边界。
+- 部署与安全：Community 自部署、GHCR 镜像、Cloudflare Pages、环境变量、私有化部署、数据边界。
 - 试点与交付：试点手册、教育版交付包、知识库初始化、成功指标。
 - 校园场景：教师、学生、行政与学工。
 - 路线图与 FAQ：版本路线和比赛/商业化常见问题。
+
+## Community Edition 自部署
+
+文档站已同步主仓库的 CE 自部署说明：
+
+- 页面：<https://docs.qeedu.tech/zh/deployment/community-self-hosting>
+- Compose 文件：<https://github.com/turmwerk/qeedu/blob/main/docker/docker-compose.release.yaml>
+- 镜像仓库：`ghcr.io/turmwerk/qeedu-*`
+- 已验证标签：`test-ce-20260604`
+
+该标签已验证匿名拉取、完整栈启动、健康检查、前端代理、邮箱验证码注册和 `/api/v1/me` 登录态接口。
 
 ## 仓库结构
 
@@ -117,4 +128,3 @@ Cloudflare Pages 推荐配置：
 ## 许可证
 
 本仓库基于 [MIT License](LICENSE) 开源。
-

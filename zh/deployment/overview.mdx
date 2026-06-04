@@ -15,6 +15,19 @@ QeEdu 可以按三种部署方式说明：
 
 当前产品通常包含前端、API 网关、用户服务、AI 聊天服务、智能体协作服务、沙箱服务和数据库等组件。
 
+Community 自部署使用 `docker/docker-compose.release.yaml`，从 GHCR 拉取公共镜像：
+
+```text
+ghcr.io/turmwerk/qeedu-web
+ghcr.io/turmwerk/qeedu-gateway
+ghcr.io/turmwerk/qeedu-user-services
+ghcr.io/turmwerk/qeedu-sandbox
+ghcr.io/turmwerk/qeedu-ai-chat
+ghcr.io/turmwerk/qeedu-ai-copilot
+```
+
+已验证公共测试标签为 `test-ce-20260604`。
+
 ## 环境
 
 不同部署方式需要明确：
@@ -27,5 +40,4 @@ QeEdu 可以按三种部署方式说明：
 
 ## 下一步
 
-阅读私有化部署，了解教育版交付边界。
-
+阅读 Community 自部署，了解一键部署命令；阅读私有化部署，了解教育版交付边界。

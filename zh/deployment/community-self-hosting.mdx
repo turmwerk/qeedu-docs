@@ -1,0 +1,131 @@
+---
+title: Community 自部署
+description: 使用 GHCR 镜像和 Docker Compose 部署 QeEdu Community Edition。
+---
+
+## 概览
+
+QeEdu Community Edition 提供 Dify 风格的 Docker Compose 自部署入口。GitHub Release 只放源码和版本说明，Docker 镜像发布到 GHCR。
+
+GHCR 是 GitHub Packages 的 container registry，镜像与源码仓库同属 `turmwerk` 账号，不需要额外维护 Docker Hub 组织。
+
+## 镜像
+
+`docker-compose.release.yaml` 会拉取以下公共镜像：
+
+```text
+ghcr.io/turmwerk/qeedu-web:${QEEDU_VERSION}
+ghcr.io/turmwerk/qeedu-gateway:${QEEDU_VERSION}
+ghcr.io/turmwerk/qeedu-user-services:${QEEDU_VERSION}
+ghcr.io/turmwerk/qeedu-sandbox:${QEEDU_VERSION}
+ghcr.io/turmwerk/qeedu-ai-chat:${QEEDU_VERSION}
+ghcr.io/turmwerk/qeedu-ai-copilot:${QEEDU_VERSION}
+```
+
+当前已验证的公共测试标签是：
+
+```text
+test-ce-20260604
+```
+
+## 快速部署
+
+```bash
+git clone https://github.com/turmwerk/qeedu.git
+cd qeedu/docker
+cp .env.example .env
+```
+
+编辑 `.env`，至少修改：
+
+```env
+QEEDU_VERSION=test-ce-20260604
+QEEDU_IMAGE_PREFIX=ghcr.io/turmwerk
+FRONTEND_URL=http://localhost:3000
+JWT_SECRET=replace-with-a-long-random-string
+MYSQL_ROOT_PASSWORD=replace-with-a-strong-password
+DATABASE_DSN=root:replace-with-a-strong-password@tcp(mysql:3306)/qeedu?charset=utf8mb4&parseTime=True&loc=Local
+```
+
+启动：
+
+```bash
+docker compose -f docker-compose.release.yaml pull
+docker compose -f docker-compose.release.yaml up -d
+```
+
+访问：
+
+```text
+http://localhost:3000
+```
+
+## 健康检查
+
+```bash
+curl http://localhost:8080/health
+curl http://localhost:3000/health
+curl http://localhost:3000/api/v1/ai/models
+```
+
+## 端口冲突
+
+如果本机已有服务占用 `3000` 或 `8080`，可以临时覆盖端口：
+
+```bash
+EXPOSE_WEB_PORT=13001 \
+EXPOSE_API_PORT=18081 \
+FRONTEND_URL=http://localhost:13001 \
+docker compose -f docker-compose.release.yaml up -d
+```
+
+对应检查：
+
+```bash
+curl http://localhost:18081/health
+curl http://localhost:13001/health
+```
+
+## 已验证内容
+
+`test-ce-20260604` 标签已完成以下验证：
+
+- 匿名拉取 6 个 GHCR 镜像。
+- `docker-compose.release.yaml` 启动完整栈。
+- `gateway` 和 `web` healthcheck 正常。
+- 前端静态资源可访问。
+- `web` 代理 `/api/v1/ai/models` 正常。
+- 邮箱验证码注册链路正常。
+- 登录态 cookie 使用 `qeedu_token`，`GET /api/v1/me` 正常返回用户信息。
+
+## 发布正式版本
+
+正式发布时使用 `v*` tag：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+`.github/workflows/ce-docker-images.yml` 会构建并推送同名 GHCR 镜像标签。用户部署时把 `.env` 中的 `QEEDU_VERSION` 改成相同版本：
+
+```env
+QEEDU_VERSION=v0.1.0
+```
+
+## 升级
+
+升级前建议备份数据库卷：
+
+```bash
+cd docker
+docker compose -f docker-compose.release.yaml down
+docker compose -f docker-compose.release.yaml config > compose.backup.yaml
+docker run --rm -v qeedu-ce_qeedu-mysql-data:/data -v "$PWD":/backup alpine tar czf /backup/mysql-data.tgz /data
+docker compose -f docker-compose.release.yaml pull
+docker compose -f docker-compose.release.yaml up -d
+```
+
+## 下一步
+
+继续阅读环境变量，确认 OAuth、域名和模型供应商配置。

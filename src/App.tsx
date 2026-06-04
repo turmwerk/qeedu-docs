@@ -34,6 +34,7 @@ const groups = [
     title: '部署与安全',
     pages: [
       'zh/deployment/overview',
+      'zh/deployment/community-self-hosting',
       'zh/deployment/private-deployment',
       'zh/deployment/cloudflare-pages',
       'zh/deployment/environment-variables',
