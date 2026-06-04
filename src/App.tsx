@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, FileText, Github, Home, Menu, Search } from 'lucide-react'
+import { BookOpen, ChevronRight, Cloud, FileText, Github, Home, Menu, Search } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
@@ -112,7 +112,7 @@ function AppLayout() {
     <div className="docs-app">
       <header className="topbar">
         <Link className="brand" to="/">
-          <span className="brand-mark">Q</span>
+          <img className="brand-logo" src="/qeedu-logo.png" alt="" />
           <span>
             <strong>QeEdu Docs</strong>
             <small>启育文档中心</small>
@@ -127,7 +127,10 @@ function AppLayout() {
             <Home size={16} />
             官网
           </a>
-          <a href={cloudUrl}>Cloud</a>
+          <a href={cloudUrl}>
+            <Cloud size={16} />
+            Cloud
+          </a>
           <a href={githubUrl}>
             <Github size={16} />
             GitHub
