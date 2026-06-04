@@ -16,6 +16,34 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(31, 196, 31, 0.55) rgba(31, 196, 31, 0.1);
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(31, 196, 31, 0.08), rgba(20, 140, 20, 0.12));
+  box-shadow: inset 0 0 0 1px rgba(31, 196, 31, 0.06);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 3px solid rgba(31, 196, 31, 0.1);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(60, 220, 60, 0.9), rgba(31, 180, 31, 0.9));
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(80, 230, 80, 0.95), rgba(31, 190, 31, 0.95));
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, rgba(50, 200, 50, 1), rgba(20, 140, 20, 1));
 }
 
 body {
@@ -44,7 +72,7 @@ a {
   top: 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: 240px minmax(220px, 520px) 1fr;
+  grid-template-columns: minmax(220px, 520px) 1fr;
   gap: 18px;
   align-items: center;
   height: 68px;
@@ -155,7 +183,7 @@ a {
 }
 
 .sidebar,
-.toc {
+.scroll-spy {
   position: sticky;
   top: 86px;
   align-self: start;
@@ -174,11 +202,13 @@ a {
 
 .sidebar {
   width: var(--docs-sidebar-width);
-  min-height: 100vh;
+  height: 100vh;
   padding: 18px 18px 24px;
   border-right: 1px solid #dfece2;
   background: rgba(248, 252, 247, 0.96);
   backdrop-filter: blur(14px);
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .sidebar-profile {
@@ -408,34 +438,97 @@ a {
   color: inherit;
 }
 
-.toc {
+.scroll-spy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 200px;
+  max-height: calc(100vh - 86px);
+  padding: 28px 0 24px;
+  overflow-y: auto;
   color: #5d7068;
   font-size: 14px;
-  border-left: 1px solid rgba(10, 85, 65, 0.1);
-  padding-left: 18px;
 }
 
-.toc p {
-  margin: 0 0 12px;
-  color: #0d7d5f;
-  font-size: 13px;
+.scroll-spy__status {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
+  padding: 0 0 12px;
+  background: rgba(247, 251, 246, 0.94);
+  backdrop-filter: blur(10px);
+}
+
+.scroll-spy__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scroll-spy__bar {
+  position: relative;
+  width: 4px;
+  height: 90px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(13, 125, 95, 0.1);
+}
+
+.scroll-spy__bar span {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: #1fc41f;
+}
+
+.scroll-spy__percent {
+  color: #102f27;
+  font-size: 18px;
   font-weight: 820;
 }
 
-.toc a {
-  display: block;
-  margin: 10px 0;
-  color: #5d7068;
-  line-height: 1.45;
+.scroll-spy__nav {
+  display: grid;
+  gap: 6px;
 }
 
-.toc a:hover {
-  color: #0d5f49;
+.scroll-spy__nav button {
+  all: unset;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 0 4px 10px;
+  border-left: 2px solid transparent;
+  color: #5d7068;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: left;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.scroll-spy__nav button.is-active {
+  border-left-color: #1fc41f;
+  color: #102f27;
+}
+
+.scroll-spy__nav button:hover,
+.scroll-spy__nav button:focus-visible {
+  color: #102f27;
+  outline: none;
 }
 
 @media (max-width: 1080px) {
   .topbar {
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding-inline: 20px;
   }
 
@@ -449,7 +542,7 @@ a {
     margin-left: calc(var(--docs-sidebar-width) + 22px);
   }
 
-  .toc {
+  .scroll-spy {
     display: none;
   }
 }
@@ -541,7 +634,7 @@ a {
 
   .mobile-drawer .sidebar {
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     padding: 22px 16px;
   }
 
@@ -571,14 +664,45 @@ a {
     transform: translateX(0);
   }
 
-  .toc--mobile {
-    display: block;
+  .scroll-spy--mobile {
+    display: flex;
     position: static;
     width: 100%;
     max-height: none;
     min-height: 100%;
-    padding: 18px 12px 24px;
-    border-left: 0;
+    gap: 10px;
+    padding: 0 10px 22px;
+    overflow: visible;
+  }
+
+  .scroll-spy--mobile .scroll-spy__status {
+    top: 0;
+    margin: 0 -10px;
+    padding: 14px 10px 12px;
+    border-bottom: 1px solid #dfece2;
+  }
+
+  .scroll-spy--mobile .scroll-spy__progress {
+    gap: 9px;
+  }
+
+  .scroll-spy--mobile .scroll-spy__bar {
+    height: 76px;
+  }
+
+  .scroll-spy--mobile .scroll-spy__percent {
+    font-size: 14px;
+  }
+
+  .scroll-spy--mobile .scroll-spy__nav {
+    gap: 5px;
+    padding-top: 6px;
+  }
+
+  .scroll-spy--mobile .scroll-spy__nav button {
+    min-height: 30px;
+    font-size: 12px;
+    font-weight: 720;
   }
 
   .docs-layout {

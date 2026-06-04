@@ -189,13 +189,6 @@ function AppLayout() {
       </aside>
 
       <header className="topbar">
-        <Link className="brand" to="/">
-          <img className="brand-logo" src="/qeedu-logo.png" alt="" />
-          <span>
-            <strong>QeEdu Docs</strong>
-            <small>启育文档中心</small>
-          </span>
-        </Link>
         <label className="search-box">
           <Search size={16} />
           <input placeholder="搜索文档" aria-label="搜索文档" />
@@ -294,14 +287,80 @@ function Toc({
   mobile?: boolean
   onNavigate?: () => void
 }) {
+  const [activeId, setActiveId] = useState(headings[0]?.id ?? '')
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    setActiveId(headings[0]?.id ?? '')
+
+    function updateScrollState() {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const ratio = max <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / max))
+      setProgress(Math.round(ratio * 100))
+
+      const threshold = window.scrollY + (mobile ? 72 : 110)
+      let current = headings[0]?.id ?? ''
+
+      for (const heading of headings) {
+        const el = document.getElementById(heading.id)
+        if (!el) {
+          continue
+        }
+
+        const top = el.getBoundingClientRect().top + window.scrollY
+        if (top > threshold) {
+          break
+        }
+        current = heading.id
+      }
+
+      setActiveId(current)
+    }
+
+    updateScrollState()
+    window.addEventListener('scroll', updateScrollState, { passive: true })
+    window.addEventListener('resize', updateScrollState)
+
+    return () => {
+      window.removeEventListener('scroll', updateScrollState)
+      window.removeEventListener('resize', updateScrollState)
+    }
+  }, [headings, mobile])
+
+  function scrollToHeading(id: string) {
+    const el = document.getElementById(id)
+    if (!el) {
+      return
+    }
+
+    const offset = mobile ? 72 : 110
+    const top = el.getBoundingClientRect().top + window.scrollY - offset
+    window.scrollTo({ top, behavior: 'smooth' })
+    onNavigate?.()
+  }
+
   return (
-    <aside className={mobile ? 'toc toc--mobile' : 'toc'}>
-      <p>本页</p>
-      {headings.map((heading) => (
-        <a key={heading.id} href={`#${heading.id}`} onClick={onNavigate}>
-          {heading.text}
-        </a>
-      ))}
+    <aside className={mobile ? 'scroll-spy scroll-spy--mobile' : 'scroll-spy'}>
+      <div className="scroll-spy__status">
+        <div className="scroll-spy__progress">
+          <div className="scroll-spy__bar">
+            <span style={{ height: `${progress}%` }} />
+          </div>
+          <span className="scroll-spy__percent">{progress}%</span>
+        </div>
+      </div>
+      <nav className="scroll-spy__nav" aria-label="本页目录">
+        {headings.map((heading) => (
+          <button
+            className={heading.id === activeId ? 'is-active' : undefined}
+            key={heading.id}
+            type="button"
+            onClick={() => scrollToHeading(heading.id)}
+          >
+            {heading.text}
+          </button>
+        ))}
+      </nav>
     </aside>
   )
 }
