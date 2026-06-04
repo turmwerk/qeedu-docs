@@ -1,5 +1,9 @@
 <h1 align="center">QeEdu Docs</h1>
 
+<p align="center">
+  <img src="https://count.getloli.com/get/@qeedu-docs?theme=rule34" alt="Visitors">
+</p>
+
 <div align="center">
 
 <div>
