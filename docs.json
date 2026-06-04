@@ -39,7 +39,18 @@
                 "pages": [
                   "zh/deployment/overview",
                   "zh/deployment/private-deployment",
+                  "zh/deployment/cloudflare-pages",
+                  "zh/deployment/environment-variables",
                   "zh/security/data-boundary"
+                ]
+              },
+              {
+                "group": "试点与交付",
+                "pages": [
+                  "zh/delivery/pilot-playbook",
+                  "zh/delivery/education-package",
+                  "zh/delivery/knowledge-base-init",
+                  "zh/delivery/success-metrics"
                 ]
               },
               {
@@ -48,6 +59,13 @@
                   "zh/scenarios/teachers",
                   "zh/scenarios/students",
                   "zh/scenarios/administration"
+                ]
+              },
+              {
+                "group": "路线图与 FAQ",
+                "pages": [
+                  "zh/roadmap/version-plan",
+                  "zh/roadmap/faq"
                 ]
               },
               {
@@ -79,4 +97,3 @@
     ]
   }
 }
-

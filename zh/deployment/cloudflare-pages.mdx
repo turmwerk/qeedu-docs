@@ -1,0 +1,71 @@
+---
+title: Cloudflare Pages 部署
+description: 说明 QeEdu 官网、Cloud 产品和文档站的分域部署方式。
+---
+
+## 概览
+
+QeEdu 当前建议采用三站分域结构：
+
+- `qeedu.tech`：官网，展示产品定位、商业模式、版本路线和试点方案。
+- `cloud.qeedu.tech`：Cloud 产品，承载登录、智能体、知识库和实际体验。
+- `docs.qeedu.tech`：文档站，承载部署、试点、数据安全和开发说明。
+
+这种结构接近成熟开源 AI 产品的组织方式，便于比赛展示、用户试用和后续商业化分层。
+
+## 官网仓库
+
+官网仓库为 `qeedu-home`，推荐 Cloudflare Pages 配置：
+
+```bash
+pnpm install
+pnpm build
+```
+
+构建输出目录：
+
+```text
+dist
+```
+
+## 文档仓库
+
+文档仓库为 `qeedu-docs`，同样使用 Vite 静态构建。仓库保留 `docs.json` 和 MDX 文档结构，后续可以迁移到 Mintlify 或类似文档平台。
+
+推荐配置：
+
+```bash
+pnpm install
+pnpm build
+```
+
+输出目录：
+
+```text
+dist
+```
+
+## Cloud 产品
+
+Cloud 产品仍由主仓库 `qeedu` 提供。前端部署到 `cloud.qeedu.tech`，后端 API 使用 `api.qeedu.tech`。
+
+前端生产环境应指向：
+
+```text
+VITE_API_BASE_URL=https://api.qeedu.tech/api/v1
+```
+
+## SPA 回退
+
+官网和文档站都包含 Cloudflare Pages `_redirects` 文件：
+
+```text
+/* /index.html 200
+```
+
+这样直接访问 `/education`、`/zh/getting-started/introduction` 等深路径时，Cloudflare 会返回前端应用入口。
+
+## 下一步
+
+继续阅读环境变量配置，确认 OAuth、API 和前端域名之间的关系。
+

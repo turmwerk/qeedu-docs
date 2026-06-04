@@ -31,11 +31,30 @@ const groups = [
   },
   {
     title: '部署与安全',
-    pages: ['zh/deployment/overview', 'zh/deployment/private-deployment', 'zh/security/data-boundary'],
+    pages: [
+      'zh/deployment/overview',
+      'zh/deployment/private-deployment',
+      'zh/deployment/cloudflare-pages',
+      'zh/deployment/environment-variables',
+      'zh/security/data-boundary',
+    ],
+  },
+  {
+    title: '试点与交付',
+    pages: [
+      'zh/delivery/pilot-playbook',
+      'zh/delivery/education-package',
+      'zh/delivery/knowledge-base-init',
+      'zh/delivery/success-metrics',
+    ],
   },
   {
     title: '校园场景',
     pages: ['zh/scenarios/teachers', 'zh/scenarios/students', 'zh/scenarios/administration'],
+  },
+  {
+    title: '路线图与 FAQ',
+    pages: ['zh/roadmap/version-plan', 'zh/roadmap/faq'],
   },
   {
     title: 'API',
@@ -107,6 +126,7 @@ function parseMdx(source: string) {
 function AppLayout() {
   const location = useLocation()
   const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
+  const headings = getHeadings(current.content)
 
   return (
     <div className="docs-app">
@@ -173,8 +193,11 @@ function AppLayout() {
 
         <aside className="toc">
           <p>本页</p>
-          <a href="#overview">概览</a>
-          <a href="#next">下一步</a>
+          {headings.map((heading) => (
+            <a key={heading.id} href={`#${heading.id}`}>
+              {heading.text}
+            </a>
+          ))}
         </aside>
       </div>
     </div>
@@ -192,9 +215,49 @@ function DocArticle({ page }: { page: DocPage }) {
       </div>
       <h1>{page.title}</h1>
       <p className="lead">{page.description}</p>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{page.content}</ReactMarkdown>
+      <ReactMarkdown
+        components={{
+          h2: ({ children }) => {
+            const text = flattenNodeText(children)
+            return <h2 id={slugifyHeading(text)}>{children}</h2>
+          },
+        }}
+        remarkPlugins={[remarkGfm]}
+      >
+        {page.content}
+      </ReactMarkdown>
     </article>
   )
+}
+
+function getHeadings(content: string) {
+  return content
+    .split('\n')
+    .filter((line) => line.startsWith('## '))
+    .map((line) => {
+      const text = line.replace(/^##\s+/, '').trim()
+      return { text, id: slugifyHeading(text) }
+    })
+}
+
+function slugifyHeading(text: string) {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function flattenNodeText(children: React.ReactNode): string {
+  if (typeof children === 'string' || typeof children === 'number') {
+    return String(children)
+  }
+
+  if (Array.isArray(children)) {
+    return children.map(flattenNodeText).join('')
+  }
+
+  return ''
 }
 
 export function App() {

@@ -1,0 +1,53 @@
+---
+title: 环境变量
+description: 说明 QeEdu Cloud 和后端服务的关键环境变量。
+---
+
+## 概览
+
+QeEdu 的域名拆分后，最重要的是保证前端地址、API 地址和 OAuth 回调地址一致。错误配置会导致登录后跳回旧域名，或 Cookie 无法生效。
+
+## 前端变量
+
+Cloud 前端推荐使用：
+
+```text
+VITE_API_BASE_URL=https://api.qeedu.tech/api/v1
+```
+
+官网和文档站属于纯静态展示站，不应保存后端密钥或 OAuth 密钥。
+
+## 后端变量
+
+后端网关应至少关注：
+
+```text
+FRONTEND_URL=https://cloud.qeedu.tech
+GITHUB_CALLBACK_URL=https://api.qeedu.tech/api/v1/auth/github/callback
+GOOGLE_CALLBACK_URL=https://api.qeedu.tech/api/v1/auth/google/callback
+MICROSOFT_CALLBACK_URL=https://api.qeedu.tech/api/v1/auth/microsoft/callback
+```
+
+`FRONTEND_URL` 决定 OAuth 成功或失败后跳转到哪里。Cloud 产品迁移到 `cloud.qeedu.tech` 后，这个值不应继续使用 `https://qeedu.tech`。
+
+## OAuth 控制台
+
+GitHub、Google、Microsoft 等 OAuth 应用控制台中的回调地址，也必须与后端变量保持一致。
+
+推荐生产回调：
+
+```text
+https://api.qeedu.tech/api/v1/auth/github/callback
+```
+
+## 安全建议
+
+- 不要提交 `.env` 文件。
+- 不要把 OAuth Secret、JWT Secret、数据库密码写进前端仓库。
+- 示例配置应使用占位符。
+- 私有化部署时应由学校或实施方生成独立密钥。
+
+## 下一步
+
+阅读数据边界，理解哪些数据适合放在 Cloud，哪些应进入私有化部署。
+
