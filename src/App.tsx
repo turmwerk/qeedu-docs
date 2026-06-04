@@ -1,4 +1,5 @@
-import { BookOpen, ChevronRight, Cloud, FileText, Github, Home, Menu, Search } from 'lucide-react'
+import { BookOpen, CalendarDays, ChevronRight, Cloud, FileText, Github, Home, Menu, Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
@@ -127,9 +128,66 @@ function AppLayout() {
   const location = useLocation()
   const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
   const headings = getHeadings(current.content)
+  const [navOpen, setNavOpen] = useState(false)
+  const [tocOpen, setTocOpen] = useState(false)
+
+  useEffect(() => {
+    setNavOpen(false)
+    setTocOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    const drawersOpen = navOpen || tocOpen
+    const previousOverflow = document.body.style.overflow
+
+    function onKeydown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setNavOpen(false)
+        setTocOpen(false)
+      }
+    }
+
+    if (drawersOpen) {
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', onKeydown)
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeydown)
+    }
+  }, [navOpen, tocOpen])
+
+  function closeDrawers() {
+    setNavOpen(false)
+    setTocOpen(false)
+  }
 
   return (
     <div className="docs-app">
+      <MobileHeader
+        onOpenNav={() => {
+          setTocOpen(false)
+          setNavOpen(true)
+        }}
+        onOpenToc={() => {
+          setNavOpen(false)
+          setTocOpen(true)
+        }}
+      />
+
+      {(navOpen || tocOpen) && (
+        <button className="drawer-overlay" type="button" aria-label="关闭菜单" onClick={closeDrawers} />
+      )}
+
+      <aside className={navOpen ? 'mobile-drawer is-open' : 'mobile-drawer'} aria-label="移动端文档导航">
+        <DocsSidebar onNavigate={() => setNavOpen(false)} />
+      </aside>
+
+      <aside className={tocOpen ? 'mobile-toc-drawer is-open' : 'mobile-toc-drawer'} aria-label="移动端本页目录">
+        <Toc headings={headings} onNavigate={() => setTocOpen(false)} mobile />
+      </aside>
+
       <header className="topbar">
         <Link className="brand" to="/">
           <img className="brand-logo" src="/qeedu-logo.png" alt="" />
@@ -159,27 +217,7 @@ function AppLayout() {
       </header>
 
       <div className="docs-layout">
-        <aside className="sidebar">
-          <div className="sidebar-title">
-            <Menu size={16} />
-            文档导航
-          </div>
-          {groups.map((group) => (
-            <section key={group.title}>
-              <h2>{group.title}</h2>
-              {group.pages.map((slug) => {
-                const page = pages.find((item) => item.slug === slug)
-                if (!page) return null
-                return (
-                  <NavLink key={slug} to={`/${slug}`}>
-                    <FileText size={15} />
-                    {page.title}
-                  </NavLink>
-                )
-              })}
-            </section>
-          ))}
-        </aside>
+        <DocsSidebar />
 
         <main className="content">
           <Routes>
@@ -191,16 +229,80 @@ function AppLayout() {
           </Routes>
         </main>
 
-        <aside className="toc">
-          <p>本页</p>
-          {headings.map((heading) => (
-            <a key={heading.id} href={`#${heading.id}`}>
-              {heading.text}
-            </a>
-          ))}
-        </aside>
+        <Toc headings={headings} />
       </div>
     </div>
+  )
+}
+
+function MobileHeader({ onOpenNav, onOpenToc }: { onOpenNav: () => void; onOpenToc: () => void }) {
+  return (
+    <header className="mobile-header">
+      <button className="mobile-header__button" type="button" aria-label="打开文档导航" onClick={onOpenNav}>
+        <Menu size={22} />
+      </button>
+      <Link className="mobile-header__brand" to="/">
+        <img className="brand-logo" src="/qeedu-logo.png" alt="" />
+        <span>QeEdu Docs</span>
+      </Link>
+      <button className="mobile-header__button" type="button" aria-label="打开本页目录" onClick={onOpenToc}>
+        <CalendarDays size={21} />
+      </button>
+    </header>
+  )
+}
+
+function DocsSidebar({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <aside className="sidebar">
+      <Link className="sidebar-profile" to="/" onClick={onNavigate}>
+        <img className="sidebar-profile__logo" src="/qeedu-logo.png" alt="" />
+        <span>
+          <strong>QeEdu Docs</strong>
+          <small>启育文档中心</small>
+        </span>
+      </Link>
+      <div className="sidebar-title">
+        <Menu size={16} />
+        文档导航
+      </div>
+      {groups.map((group) => (
+        <section key={group.title}>
+          <h2>{group.title}</h2>
+          {group.pages.map((slug) => {
+            const page = pages.find((item) => item.slug === slug)
+            if (!page) return null
+            return (
+              <NavLink key={slug} to={`/${slug}`} onClick={onNavigate}>
+                <FileText size={15} />
+                {page.title}
+              </NavLink>
+            )
+          })}
+        </section>
+      ))}
+    </aside>
+  )
+}
+
+function Toc({
+  headings,
+  mobile = false,
+  onNavigate,
+}: {
+  headings: Array<{ text: string; id: string }>
+  mobile?: boolean
+  onNavigate?: () => void
+}) {
+  return (
+    <aside className={mobile ? 'toc toc--mobile' : 'toc'}>
+      <p>本页</p>
+      {headings.map((heading) => (
+        <a key={heading.id} href={`#${heading.id}`} onClick={onNavigate}>
+          {heading.text}
+        </a>
+      ))}
+    </aside>
   )
 }
 
