@@ -857,6 +857,11 @@ function Toc({
 }
 
 function DocArticle({ page }: { page: DocPage }) {
+  const currentIndex = pages.findIndex((item) => item.slug === page.slug)
+  const previousPage = currentIndex > 0 ? pages[currentIndex - 1] : undefined
+  const nextPage = currentIndex >= 0 && currentIndex < pages.length - 1 ? pages[currentIndex + 1] : undefined
+  const relatedPages = pages.filter((item) => item.group === page.group && item.slug !== page.slug).slice(0, 3)
+
   return (
     <article className="doc-article">
       <div className="breadcrumbs">
@@ -878,7 +883,60 @@ function DocArticle({ page }: { page: DocPage }) {
       >
         {page.content}
       </ReactMarkdown>
+      <DocFooterNav previousPage={previousPage} nextPage={nextPage} relatedPages={relatedPages} />
     </article>
+  )
+}
+
+function DocFooterNav({
+  previousPage,
+  nextPage,
+  relatedPages,
+}: {
+  previousPage?: DocPage
+  nextPage?: DocPage
+  relatedPages: DocPage[]
+}) {
+  return (
+    <footer className="doc-footer-nav" aria-label="继续阅读">
+      {(previousPage || nextPage) && (
+        <div className="doc-footer-nav__pager">
+          {previousPage ? (
+            <Link to={`/${previousPage.slug}`}>
+              <span>上一篇</span>
+              <strong>{previousPage.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+          {nextPage ? (
+            <Link to={`/${nextPage.slug}`}>
+              <span>下一篇</span>
+              <strong>{nextPage.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+        </div>
+      )}
+      {relatedPages.length > 0 && (
+        <section className="doc-related">
+          <div>
+            <span>Related</span>
+            <h2>继续阅读同组文档</h2>
+          </div>
+          <div>
+            {relatedPages.map((related) => (
+              <Link key={related.slug} to={`/${related.slug}`}>
+                <FileText size={17} />
+                <strong>{related.title}</strong>
+                <small>{related.description}</small>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </footer>
   )
 }
 
