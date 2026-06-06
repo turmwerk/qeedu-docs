@@ -1,4 +1,25 @@
-import { BookOpen, CalendarDays, ChevronRight, Cloud, FileText, Github, Home, Menu, Search } from 'lucide-react'
+import {
+  BookOpen,
+  BrainCircuit,
+  Building2,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Cloud,
+  DatabaseZap,
+  FileText,
+  Github,
+  GraduationCap,
+  Home,
+  Layers3,
+  Menu,
+  Rocket,
+  School,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
@@ -16,6 +37,112 @@ type DocPage = {
   group: string
   content: string
 }
+
+type IconComponent = React.ComponentType<{ size?: number }>
+
+const landingStats = [
+  { value: '5', label: '产品线', desc: '助国际、助教、助管、助研、助学' },
+  { value: '20+', label: '场景模块', desc: '来自 edu-ai 的真实模块目录' },
+  { value: '3', label: '版本路径', desc: 'Community、Cloud、Education' },
+]
+
+const quickStartCards: Array<{ title: string; desc: string; href: string; icon: IconComponent }> = [
+  {
+    title: '5 分钟试用 Cloud',
+    desc: '先从云端体验登录、选择场景、输入任务、查看 AI 输出和人工确认。',
+    href: '/zh/getting-started/quick-start',
+    icon: Cloud,
+  },
+  {
+    title: '理解核心概念',
+    desc: '梳理智能体、知识库、模板、工作流、人工复核和私有化部署边界。',
+    href: '/zh/getting-started/key-concepts',
+    icon: Layers3,
+  },
+  {
+    title: '规划教育版试点',
+    desc: '从低风险高频任务切入，定义试点部门、知识库范围、指标和交付清单。',
+    href: '/zh/delivery/pilot-playbook',
+    icon: Rocket,
+  },
+]
+
+const productTracks: Array<{
+  title: string
+  subtitle: string
+  desc: string
+  icon: IconComponent
+  href: string
+  accent: 'blue' | 'mint' | 'amber' | 'violet' | 'coral'
+  modules: string[]
+}> = [
+  {
+    title: '助国际',
+    subtitle: '交换申请、派出支持、返校沉淀',
+    desc: '对齐 edu-ai 国际交流模块，覆盖项目中心、智能匹配、流程推进、多语言沟通、行前行后支持。',
+    icon: School,
+    href: '/zh/scenarios/students',
+    accent: 'blue',
+    modules: ['项目中心', '项目匹配', '流程助手', '邮件助手', '行前准备', '跨文化培训', '在外支持', '回国收尾', '来华支持'],
+  },
+  {
+    title: '助教',
+    subtitle: '大纲、试卷、作业反馈',
+    desc: '面向教师的课程建设入口，把教学目标、题库结构、评分标准和反馈草稿沉淀成模板。',
+    icon: GraduationCap,
+    href: '/zh/scenarios/teachers',
+    accent: 'mint',
+    modules: ['大纲生成', '试卷设计', '作业批改与反馈'],
+  },
+  {
+    title: '助管',
+    subtitle: '事务、公告、材料、节点',
+    desc: '服务辅导员和行政人员，把流程说明、通知公告、材料管理、学生问答和进度看板串起来。',
+    icon: Building2,
+    href: '/zh/scenarios/administration',
+    accent: 'amber',
+    modules: ['事务处理助手', '通知与公告生成', '材料与表单管理', '学生问答助手', '数据统计与看板', '时间节点管理'],
+  },
+  {
+    title: '助研',
+    subtitle: '检索、精读、写作',
+    desc: '围绕科研任务组织检索式、筛选记录、结构化阅读卡、证据矩阵和章节草稿。',
+    icon: BrainCircuit,
+    href: '/zh/scenarios/teachers',
+    accent: 'violet',
+    modules: ['文献检索', '论文精读', '论文写作'],
+  },
+  {
+    title: '助学',
+    subtitle: '资源、进度、生涯',
+    desc: '面向学生成长，把学院资源、培养方案、学分进度和目标画像转成阶段性行动。',
+    icon: Users,
+    href: '/zh/scenarios/students',
+    accent: 'coral',
+    modules: ['学科资源包', '学业进度雷达', '智能生涯规划'],
+  },
+]
+
+const deliveryLanes: Array<{ title: string; desc: string; icon: IconComponent; href: string }> = [
+  {
+    title: '数据边界',
+    desc: '区分 Cloud 体验、社区自部署和教育版私有化环境，明确哪些数据适合进入 AI 流程。',
+    icon: ShieldCheck,
+    href: '/zh/security/data-boundary',
+  },
+  {
+    title: '知识库初始化',
+    desc: '把制度文件、模板、FAQ、历史案例和课程材料整理成可检索、可引用的资料底座。',
+    icon: DatabaseZap,
+    href: '/zh/delivery/knowledge-base-init',
+  },
+  {
+    title: '成效指标',
+    desc: '用生成时间、修改比例、复用次数、问题反馈和人工复核记录判断试点是否值得扩大。',
+    icon: Check,
+    href: '/zh/delivery/success-metrics',
+  },
+]
 
 const groups = [
   {
@@ -127,8 +254,9 @@ function parseMdx(source: string) {
 
 function AppLayout() {
   const location = useLocation()
+  const isLanding = location.pathname === '/'
   const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
-  const headings = getHeadings(current.content)
+  const headings = isLanding ? [] : getHeadings(current.content)
   const [navOpen, setNavOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
 
@@ -215,7 +343,7 @@ function AppLayout() {
 
         <main className="content">
           <Routes>
-            <Route path="/" element={<DocArticle page={current} />} />
+            <Route path="/" element={<DocsLanding pageCount={pages.length} groupCount={groups.length} />} />
             {pages.map((page) => (
               <Route key={page.slug} path={`/${page.slug}`} element={<DocArticle page={page} />} />
             ))}
@@ -223,9 +351,152 @@ function AppLayout() {
           </Routes>
         </main>
 
-        <Toc headings={headings} />
+        {isLanding ? <DocsLandingAside /> : <Toc headings={headings} />}
       </div>
     </div>
+  )
+}
+
+function DocsLandingAside() {
+  return (
+    <aside className="landing-aside" aria-label="文档路线">
+      <div className="landing-aside__progress">
+        <span />
+        <strong>Docs Map</strong>
+      </div>
+      <a href="#start-here">快速开始</a>
+      <a href="#product-tracks">产品线地图</a>
+      <a href="#delivery-docs">试点与交付</a>
+    </aside>
+  )
+}
+
+function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount: number }) {
+  const [activeTrackIndex, setActiveTrackIndex] = useState(0)
+  const activeTrack = productTracks[activeTrackIndex]
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveTrackIndex((index) => (index + 1) % productTracks.length)
+    }, 2800)
+
+    return () => window.clearInterval(timer)
+  }, [])
+
+  return (
+    <article className="docs-landing">
+      <section className="docs-landing-hero">
+        <div>
+          <span className="landing-pill">
+            <Sparkles size={16} />
+            QeEdu Docs
+          </span>
+          <h1>从产品体验到校园试点，文档按真实交付路径组织</h1>
+          <p>
+            这里不只是功能说明，而是把 edu-ai 项目里的助国际、助教、助管、助研、助学模块，
+            拆成快速开始、场景说明、部署安全和试点交付四类文档入口。
+          </p>
+          <div className="landing-actions">
+            <a className="landing-primary" href={cloudUrl}>
+              <Cloud size={18} />
+              打开 Cloud
+            </a>
+            <a className="landing-secondary" href={homeUrl}>
+              <Home size={18} />
+              返回官网
+            </a>
+          </div>
+        </div>
+        <div className="landing-console" aria-label="文档覆盖范围">
+          <div className="landing-console__bar">
+            <span />
+            <span />
+            <span />
+            <strong>Docs Coverage</strong>
+          </div>
+          <div className="landing-stats">
+            {[...landingStats, { value: String(pageCount), label: '文档页', desc: `${groupCount} 个导航分组` }].map((item) => (
+              <article key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+                <p>{item.desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section" id="start-here">
+        <div className="landing-section__head">
+          <span>Start Here</span>
+          <h2>先读这三类文档</h2>
+        </div>
+        <div className="quick-card-grid">
+          {quickStartCards.map((card) => (
+            <Link className="quick-card" key={card.title} to={card.href}>
+              <card.icon size={22} />
+              <h3>{card.title}</h3>
+              <p>{card.desc}</p>
+              <span>
+                进入文档
+                <ChevronRight size={15} />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className={`track-lab accent-${activeTrack.accent}`} id="product-tracks" aria-label="edu-ai 产品线文档地图">
+        <div className="track-lab__nav">
+          {productTracks.map((track, index) => (
+            <button
+              className={index === activeTrackIndex ? 'active' : undefined}
+              key={track.title}
+              type="button"
+              onClick={() => setActiveTrackIndex(index)}
+            >
+              <track.icon size={18} />
+              {track.title}
+            </button>
+          ))}
+        </div>
+        <div className="track-lab__panel">
+          <div className="track-lab__copy">
+            <span>{activeTrack.subtitle}</span>
+            <h2>{activeTrack.title}</h2>
+            <p>{activeTrack.desc}</p>
+            <Link to={activeTrack.href}>
+              查看相关场景
+              <ChevronRight size={16} />
+            </Link>
+          </div>
+          <div className="track-module-map">
+            {activeTrack.modules.map((module, index) => (
+              <div key={module}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <strong>{module}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="delivery-lanes" id="delivery-docs">
+        <div className="landing-section__head">
+          <span>Delivery</span>
+          <h2>试点、部署、安全要一起读</h2>
+        </div>
+        <div className="delivery-lane-grid">
+          {deliveryLanes.map((lane) => (
+            <Link className="delivery-lane" key={lane.title} to={lane.href}>
+              <lane.icon size={22} />
+              <h3>{lane.title}</h3>
+              <p>{lane.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </article>
   )
 }
 
