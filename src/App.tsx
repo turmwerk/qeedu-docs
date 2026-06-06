@@ -144,6 +144,69 @@ const deliveryLanes: Array<{ title: string; desc: string; icon: IconComponent; h
   },
 ]
 
+const readingPaths: Array<{
+  title: string
+  desc: string
+  icon: IconComponent
+  accent: 'mint' | 'blue' | 'amber' | 'violet'
+  docs: Array<{ label: string; href: string; note: string }>
+  outcome: string
+  checks: string[]
+}> = [
+  {
+    title: 'Cloud 快速试用',
+    desc: '面向第一次接触 QeEdu 的用户，先跑通登录、场景选择、任务输入和结果确认。',
+    icon: Cloud,
+    accent: 'mint',
+    docs: [
+      { label: '快速开始', href: '/zh/getting-started/quick-start', note: '5 分钟完成第一条任务' },
+      { label: '核心概念', href: '/zh/getting-started/key-concepts', note: '理解智能体、知识库、人工复核' },
+      { label: 'Cloud 版本', href: '/zh/editions/cloud', note: '明确托管服务边界' },
+    ],
+    outcome: '能独立完成一次云端演示，并知道哪些结果需要人工确认。',
+    checks: ['账号与空间', '样例任务', '导出结果'],
+  },
+  {
+    title: '社区版自部署',
+    desc: '面向开发者和学生团队，从仓库、环境变量、模型配置到 Cloudflare Pages 发布。',
+    icon: Github,
+    accent: 'blue',
+    docs: [
+      { label: '部署总览', href: '/zh/deployment/overview', note: '理解前端、后端、网关分层' },
+      { label: '社区自部署', href: '/zh/deployment/community-self-hosting', note: '本地或服务器启动' },
+      { label: '环境变量', href: '/zh/deployment/environment-variables', note: '配置模型、域名、存储' },
+    ],
+    outcome: '能跑起社区版基础环境，并具备排查模型和前端部署问题的入口。',
+    checks: ['仓库拉取', '模型网关', '前端发布'],
+  },
+  {
+    title: '教育版试点',
+    desc: '面向院系、实验室和创新创业平台，先定义低风险场景，再组织知识库和交付包。',
+    icon: School,
+    accent: 'amber',
+    docs: [
+      { label: '试点手册', href: '/zh/delivery/pilot-playbook', note: '确定部门、场景、指标' },
+      { label: '教育版交付', href: '/zh/delivery/education-package', note: '部署、模板、培训、复盘' },
+      { label: '知识库初始化', href: '/zh/delivery/knowledge-base-init', note: '整理制度、模板、FAQ、案例' },
+    ],
+    outcome: '能把“想试 AI”转成可执行的试点范围、交付清单和验收指标。',
+    checks: ['试点边界', '校本资料', '成效指标'],
+  },
+  {
+    title: '安全与审计',
+    desc: '面向管理者和技术负责人，把数据边界、权限、日志、模型接入和人工确认讲清楚。',
+    icon: ShieldCheck,
+    accent: 'violet',
+    docs: [
+      { label: '数据边界', href: '/zh/security/data-boundary', note: '区分云端、团队、私有化' },
+      { label: '私有化部署', href: '/zh/deployment/private-deployment', note: '校内环境和模型网关' },
+      { label: '成效指标', href: '/zh/delivery/success-metrics', note: '结合调用、复核、反馈复盘' },
+    ],
+    outcome: '能回答试点前最常见的数据安全、责任边界和复核机制问题。',
+    checks: ['权限隔离', '日志留痕', '人工复核'],
+  },
+]
+
 const groups = [
   {
     title: '开始使用',
@@ -384,6 +447,7 @@ function DocsLandingAside() {
         <strong>Docs Map</strong>
       </div>
       <a href="#start-here">快速开始</a>
+      <a href="#reading-paths">阅读路径</a>
       <a href="#product-tracks">产品线地图</a>
       <a href="#delivery-docs">试点与交付</a>
     </aside>
@@ -465,6 +529,8 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         </div>
       </section>
 
+      <ReadingPathLab />
+
       <section className={`track-lab accent-${activeTrack.accent}`} id="product-tracks" aria-label="edu-ai 产品线文档地图">
         <div className="track-lab__nav">
           {productTracks.map((track, index) => (
@@ -516,6 +582,57 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         </div>
       </section>
     </article>
+  )
+}
+
+function ReadingPathLab() {
+  const [activePathIndex, setActivePathIndex] = useState(0)
+  const activePath = readingPaths[activePathIndex]
+
+  return (
+    <section className={`reading-path-lab accent-${activePath.accent}`} id="reading-paths" aria-label="文档阅读路径">
+      <div className="landing-section__head">
+        <span>Reading Paths</span>
+        <h2>按目标选择阅读路线</h2>
+      </div>
+      <div className="reading-path-lab__shell">
+        <div className="reading-path-lab__nav">
+          {readingPaths.map((path, index) => (
+            <button
+              className={index === activePathIndex ? 'active' : undefined}
+              key={path.title}
+              type="button"
+              onClick={() => setActivePathIndex(index)}
+            >
+              <path.icon size={18} />
+              <span>{path.title}</span>
+            </button>
+          ))}
+        </div>
+        <div className="reading-path-lab__panel">
+          <div className="reading-path-lab__copy">
+            <span>{activePath.title}</span>
+            <h3>{activePath.desc}</h3>
+            <p>{activePath.outcome}</p>
+            <div>
+              {activePath.checks.map((check) => (
+                <strong key={check}>{check}</strong>
+              ))}
+            </div>
+          </div>
+          <div className="reading-path-lab__steps">
+            {activePath.docs.map((doc, index) => (
+              <Link key={doc.href} to={doc.href}>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <strong>{doc.label}</strong>
+                <small>{doc.note}</small>
+                <ChevronRight size={15} />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
