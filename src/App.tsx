@@ -294,6 +294,7 @@ function AppLayout() {
 
   return (
     <div className="docs-app">
+      <DocsAmbient />
       <MobileHeader
         onOpenNav={() => {
           setTocOpen(false)
@@ -349,6 +350,27 @@ function AppLayout() {
         </main>
 
         {isLanding ? <DocsLandingAside /> : <Toc headings={headings} />}
+      </div>
+    </div>
+  )
+}
+
+function DocsAmbient() {
+  return (
+    <div className="docs-ambient" aria-hidden="true">
+      <div className="docs-ambient__mesh">
+        {Array.from({ length: 14 }, (_, index) => (
+          <span key={`mesh-${index}`} />
+        ))}
+      </div>
+      <div className="docs-ambient__ribbons">
+        <span />
+        <span />
+      </div>
+      <div className="docs-ambient__snow">
+        {Array.from({ length: 18 }, (_, index) => (
+          <span key={`snow-${index}`} />
+        ))}
       </div>
     </div>
   )
