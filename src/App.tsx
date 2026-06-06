@@ -358,6 +358,7 @@ function AppLayout() {
   return (
     <div className="docs-app">
       <DocsAmbient />
+      <DocsProgress />
       <MobileHeader
         onOpenNav={() => {
           setTocOpen(false)
@@ -414,6 +415,31 @@ function AppLayout() {
 
         {isLanding ? <DocsLandingAside /> : <Toc headings={headings} />}
       </div>
+    </div>
+  )
+}
+
+function DocsProgress() {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    function onScroll() {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(maxScroll > 0 ? Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100)) : 0)
+    }
+
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
+  return (
+    <div className="docs-progress" aria-hidden="true">
+      <span style={{ width: `${progress}%` }} />
     </div>
   )
 }

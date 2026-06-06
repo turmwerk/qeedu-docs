@@ -213,6 +213,26 @@ a {
 .docs-ambient__snow span:nth-child(17) { left: 64%; animation-delay: -17s; animation-duration: 24s; }
 .docs-ambient__snow span:nth-child(18) { left: 84%; animation-delay: -18s; animation-duration: 22s; }
 
+.docs-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 60;
+  height: 3px;
+  background: rgba(5, 22, 16, 0.05);
+  pointer-events: none;
+}
+
+.docs-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0d7d5f, #1fc41f, #b8ff5c);
+  box-shadow: 0 0 16px rgba(31, 196, 31, 0.36);
+  transition: width 90ms linear;
+}
+
 .topbar,
 .docs-layout,
 .mobile-header,
