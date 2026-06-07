@@ -1,5 +1,4 @@
 import {
-  BookOpen,
   BrainCircuit,
   Building2,
   CalendarDays,
@@ -375,6 +374,19 @@ const fallbackPage: DocPage = pages.find((page) => page.slug === 'zh/getting-sta
   content: '## 概览\n\n文档正在整理中。',
 }
 
+const dynamicButtonSelector = [
+  '.landing-primary',
+  '.landing-secondary',
+  '.sidebar section a',
+  '.docs-command-center__tabs button',
+  '.reading-path-lab__nav button',
+  '.track-lab__nav button',
+  '.mobile-header__button',
+  '.float-controls__button',
+  '.scroll-spy__nav button',
+  '.route-path a',
+].join(', ')
+
 function parseMdx(source: string) {
   const frontmatter = source.match(/^---\n([\s\S]*?)\n---\n?/)
   const metadata: Record<string, string> = {}
@@ -395,7 +407,86 @@ function parseMdx(source: string) {
   }
 }
 
+function useDynamicButtonEffects() {
+  useEffect(() => {
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+    if (!finePointer.matches || reduceMotion.matches) {
+      return undefined
+    }
+
+    let activeButton: HTMLElement | null = null
+
+    function getButton(target: EventTarget | null) {
+      if (!(target instanceof Element)) {
+        return null
+      }
+
+      return target.closest(dynamicButtonSelector) as HTMLElement | null
+    }
+
+    function clearActiveButton() {
+      activeButton?.classList.remove('is-button-lit')
+      activeButton = null
+    }
+
+    function onPointerMove(event: PointerEvent) {
+      const button = getButton(event.target)
+
+      if (!button) {
+        clearActiveButton()
+        return
+      }
+
+      const rect = button.getBoundingClientRect()
+      button.style.setProperty('--button-x', `${event.clientX - rect.left}px`)
+      button.style.setProperty('--button-y', `${event.clientY - rect.top}px`)
+
+      if (activeButton && activeButton !== button) {
+        activeButton.classList.remove('is-button-lit')
+      }
+
+      activeButton = button
+      button.classList.add('is-button-lit')
+    }
+
+    function onPointerDown(event: PointerEvent) {
+      const button = getButton(event.target)
+      if (!button) {
+        return
+      }
+
+      button.classList.remove('is-button-tapped')
+      void button.offsetWidth
+      button.classList.add('is-button-tapped')
+      window.setTimeout(() => button.classList.remove('is-button-tapped'), 420)
+    }
+
+    function onPointerOut(event: PointerEvent) {
+      if (!event.relatedTarget) {
+        clearActiveButton()
+      }
+    }
+
+    document.addEventListener('pointermove', onPointerMove, { passive: true })
+    document.addEventListener('pointerdown', onPointerDown, { passive: true })
+    document.addEventListener('pointerout', onPointerOut, { passive: true })
+    window.addEventListener('blur', clearActiveButton)
+
+    return () => {
+      clearActiveButton()
+      document.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('pointerout', onPointerOut)
+      window.removeEventListener('blur', clearActiveButton)
+    }
+  }, [])
+}
+
 function AppLayout() {
+  useDynamicButtonEffects()
+
   const location = useLocation()
   const previousPath = useRef(location.pathname)
   const isLanding = location.pathname === '/'
@@ -457,6 +548,7 @@ function AppLayout() {
           setTocOpen(true)
         }}
       />
+      <RoutePathBar key={location.pathname} isLanding={isLanding} page={current} />
 
       {(navOpen || tocOpen) && (
         <button className="drawer-overlay" type="button" aria-label="关闭菜单" onClick={closeDrawers} />
@@ -475,13 +567,13 @@ function AppLayout() {
 
         <main className="content">
           <div className="content__page" key={location.pathname}>
-          <Routes>
-            <Route path="/" element={<DocsLanding pageCount={pages.length} groupCount={groups.length} />} />
-            {pages.map((page) => (
-              <Route key={page.slug} path={`/${page.slug}`} element={<DocArticle page={page} />} />
-            ))}
-            <Route path="*" element={<DocArticle page={current} />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<DocsLanding pageCount={pages.length} groupCount={groups.length} />} />
+              {pages.map((page) => (
+                <Route key={page.slug} path={`/${page.slug}`} element={<DocArticle page={page} />} />
+              ))}
+              <Route path="*" element={<DocArticle page={current} />} />
+            </Routes>
           </div>
         </main>
 
@@ -528,6 +620,22 @@ function DocsLandingAside() {
       <a href="#product-tracks">产品线地图</a>
       <a href="#delivery-docs">试点与交付</a>
     </aside>
+  )
+}
+
+function RoutePathBar({ page, isLanding }: { page: DocPage; isLanding: boolean }) {
+  const groupStartSlug = groups.find((group) => group.title === page.group)?.pages[0]
+  const groupHref = isLanding || !groupStartSlug ? '/' : `/${groupStartSlug}`
+  const pageHref = isLanding ? '/' : `/${page.slug}`
+
+  return (
+    <nav className="route-path" aria-label="当前页面路径">
+      <Link to={groupHref}>{isLanding ? '文档中心' : page.group}</Link>
+      <ChevronRight size={14} />
+      <Link aria-current="page" className="route-path__current" to={pageHref}>
+        {isLanding ? '首页' : page.title}
+      </Link>
+    </nav>
   )
 }
 
@@ -888,7 +996,7 @@ function Toc({
       const ratio = max <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / max))
       setProgress(Math.round(ratio * 100))
 
-      const threshold = window.scrollY + (mobile ? 72 : 46)
+      const threshold = window.scrollY + (mobile ? 118 : 56)
       let current = headings[0]?.id ?? ''
 
       for (const heading of headings) {
@@ -923,7 +1031,7 @@ function Toc({
       return
     }
 
-    const offset = mobile ? 72 : 46
+    const offset = mobile ? 118 : 56
     const top = el.getBoundingClientRect().top + window.scrollY - offset
     window.scrollTo({ top, behavior: 'smooth' })
     onNavigate?.()
@@ -965,12 +1073,6 @@ function DocArticle({ page }: { page: DocPage }) {
 
   return (
     <article className="doc-article">
-      <div className="breadcrumbs">
-        <BookOpen size={15} />
-        <span>{page.group}</span>
-        <ChevronRight size={14} />
-        <span>{page.title}</span>
-      </div>
       <h1>{page.title}</h1>
       <p className="lead">{page.description}</p>
       <ArticleContextPanel
