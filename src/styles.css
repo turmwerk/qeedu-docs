@@ -383,12 +383,6 @@ a {
   padding-bottom: 8px;
 }
 
-.sidebar-page-context {
-  margin-bottom: 18px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(184, 255, 92, 0.14);
-}
-
 .sidebar h2 {
   margin: 0 0 8px;
   color: rgba(223, 255, 208, 0.52);
@@ -448,23 +442,6 @@ a {
 .sidebar section a:hover::after,
 .sidebar section a.active::after {
   transform: translateX(430%) skewX(-10deg);
-}
-
-.sidebar-page-context a {
-  min-height: 36px;
-  font-size: 13px;
-}
-
-.sidebar-page-context a span {
-  flex: 0 0 28px;
-  color: #1fc41f;
-  font-size: 11px;
-  font-weight: 860;
-}
-
-.sidebar-page-context__next {
-  margin-top: 6px;
-  background: rgba(31, 196, 31, 0.08);
 }
 
 .content {

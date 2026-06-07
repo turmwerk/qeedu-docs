@@ -557,7 +557,7 @@ function AppLayout() {
       )}
 
       <aside className={navOpen ? 'mobile-drawer is-open' : 'mobile-drawer'} aria-label="移动端菜单">
-        <DocsSidebar isLanding={isLanding} page={current} onNavigate={() => setNavOpen(false)} />
+        <DocsSidebar onNavigate={() => setNavOpen(false)} />
       </aside>
 
       <aside className={tocOpen ? 'mobile-toc-drawer is-open' : 'mobile-toc-drawer'} aria-label="移动端本页目录">
@@ -565,7 +565,7 @@ function AppLayout() {
       </aside>
 
       <div className="docs-layout">
-        <DocsSidebar isLanding={isLanding} page={current} />
+        <DocsSidebar />
 
         <main className="content">
           <div className="content__page" key={location.pathname}>
@@ -950,11 +950,7 @@ function MobileHeader({ onOpenNav, onOpenToc }: { onOpenNav: () => void; onOpenT
   )
 }
 
-function DocsSidebar({ page, isLanding, onNavigate }: { page: DocPage; isLanding: boolean; onNavigate?: () => void }) {
-  const currentHeadings = isLanding ? landingHeadings : getHeadings(page.content).slice(0, 5)
-  const currentIndex = pages.findIndex((item) => item.slug === page.slug)
-  const nextPage = !isLanding && currentIndex >= 0 && currentIndex < pages.length - 1 ? pages[currentIndex + 1] : undefined
-
+function DocsSidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <aside className="sidebar">
       <Link className="sidebar-profile" to="/" onClick={onNavigate}>
@@ -963,23 +959,6 @@ function DocsSidebar({ page, isLanding, onNavigate }: { page: DocPage; isLanding
           <small>启育文档中心</small>
         </span>
       </Link>
-      {currentHeadings.length > 0 && (
-        <section className="sidebar-page-context" aria-label="本页目录">
-          <h2>本页目录</h2>
-          {currentHeadings.map((heading, index) => (
-            <a href={`#${heading.id}`} key={heading.id} onClick={onNavigate}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              {heading.text}
-            </a>
-          ))}
-          {nextPage && (
-            <Link className="sidebar-page-context__next" to={`/${nextPage.slug}`} onClick={onNavigate}>
-              <span>Next</span>
-              {nextPage.title}
-            </Link>
-          )}
-        </section>
-      )}
       {groups.map((group) => (
         <section key={group.title}>
           <h2>{group.title}</h2>
