@@ -938,6 +938,8 @@ function DocArticle({ page }: { page: DocPage }) {
   const previousPage = currentIndex > 0 ? pages[currentIndex - 1] : undefined
   const nextPage = currentIndex >= 0 && currentIndex < pages.length - 1 ? pages[currentIndex + 1] : undefined
   const relatedPages = pages.filter((item) => item.group === page.group && item.slug !== page.slug).slice(0, 3)
+  const articleHeadings = getHeadings(page.content).slice(0, 4)
+  const readingMinutes = estimateReadingMinutes(page.content)
 
   return (
     <article className="doc-article">
@@ -949,6 +951,13 @@ function DocArticle({ page }: { page: DocPage }) {
       </div>
       <h1>{page.title}</h1>
       <p className="lead">{page.description}</p>
+      <ArticleContextPanel
+        headings={articleHeadings}
+        nextPage={nextPage}
+        page={page}
+        readingMinutes={readingMinutes}
+        relatedPages={relatedPages}
+      />
       <ReactMarkdown
         components={{
           h2: ({ children }) => {
@@ -962,6 +971,70 @@ function DocArticle({ page }: { page: DocPage }) {
       </ReactMarkdown>
       <DocFooterNav previousPage={previousPage} nextPage={nextPage} relatedPages={relatedPages} />
     </article>
+  )
+}
+
+function ArticleContextPanel({
+  page,
+  headings,
+  readingMinutes,
+  nextPage,
+  relatedPages,
+}: {
+  page: DocPage
+  headings: Array<{ text: string; id: string }>
+  readingMinutes: number
+  nextPage?: DocPage
+  relatedPages: DocPage[]
+}) {
+  const primaryNext = nextPage ?? relatedPages[0]
+
+  return (
+    <section className="article-context" aria-label="阅读上下文">
+      <div className="article-context__signals" aria-hidden="true">
+        {Array.from({ length: 12 }, (_, index) => (
+          <span key={`article-context-signal-${index}`} />
+        ))}
+      </div>
+      <div className="article-context__summary">
+        <span>Reading Context</span>
+        <h2>{page.group}</h2>
+        <p>先确认本页在文档链路里的位置，再进入正文细节。</p>
+      </div>
+      <div className="article-context__metrics">
+        <span>
+          <strong>{readingMinutes}</strong>
+          分钟阅读
+        </span>
+        <span>
+          <strong>{headings.length}</strong>
+          个重点
+        </span>
+        <span>
+          <strong>{relatedPages.length}</strong>
+          篇同组
+        </span>
+      </div>
+      <div className="article-context__anchors">
+        {headings.length > 0 ? (
+          headings.map((heading, index) => (
+            <a href={`#${heading.id}`} key={heading.id}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              {heading.text}
+            </a>
+          ))
+        ) : (
+          <span>正文会继续补充结构化小节。</span>
+        )}
+      </div>
+      {primaryNext && (
+        <Link className="article-context__next" to={`/${primaryNext.slug}`}>
+          <span>下一步</span>
+          <strong>{primaryNext.title}</strong>
+          <ChevronRight size={16} />
+        </Link>
+      )}
+    </section>
   )
 }
 
@@ -1092,6 +1165,11 @@ function stripMarkdown(value: string) {
     .replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
     .replace(/\[([^\]]+)]\([^)]*\)/g, '$1')
     .replace(/[`*_>~-]/g, ' ')
+}
+
+function estimateReadingMinutes(content: string) {
+  const normalized = stripMarkdown(content).replace(/\s+/g, '')
+  return Math.max(2, Math.ceil(normalized.length / 520))
 }
 
 function slugifyHeading(text: string) {
