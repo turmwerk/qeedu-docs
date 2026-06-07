@@ -9,6 +9,17 @@
     />
     <link rel="icon" type="image/png" href="/qeedu-logo.png" />
     <title>QeEdu Docs</title>
+    <script>
+      ;(() => {
+        try {
+          const theme = localStorage.getItem('qeedu-docs-theme') === 'light' ? 'light' : 'dark'
+          const simpleBackground = localStorage.getItem('qeedu-docs-simple-background') !== 'false'
+
+          document.documentElement.setAttribute('data-theme', theme)
+          document.documentElement.classList.toggle('docs-simple-background', simpleBackground)
+        } catch {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
