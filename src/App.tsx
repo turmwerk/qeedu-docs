@@ -28,7 +28,6 @@ import './styles.css'
 
 const homeUrl = 'https://qeedu.tech'
 const cloudUrl = 'https://cloud.qeedu.tech'
-const githubUrl = 'https://github.com/turmwerk/qeedu'
 
 type DocPage = {
   slug: string
@@ -431,7 +430,6 @@ function AppLayout() {
 
   return (
     <div className="docs-app">
-      <DocsAmbient />
       <DocsProgress />
       <MobileHeader
         onOpenNav={() => {
@@ -455,24 +453,6 @@ function AppLayout() {
       <aside className={tocOpen ? 'mobile-toc-drawer is-open' : 'mobile-toc-drawer'} aria-label="移动端本页目录">
         <Toc headings={headings} onNavigate={() => setTocOpen(false)} mobile />
       </aside>
-
-      <header className="topbar">
-        <DocsSearch />
-        <nav className="top-links">
-          <a href={homeUrl}>
-            <Home size={16} />
-            官网
-          </a>
-          <a href={cloudUrl}>
-            <Cloud size={16} />
-            Cloud
-          </a>
-          <a href={githubUrl}>
-            <Github size={16} />
-            GitHub
-          </a>
-        </nav>
-      </header>
 
       <div className="docs-layout">
         <DocsSidebar />
@@ -514,27 +494,6 @@ function DocsProgress() {
   return (
     <div className="docs-progress" aria-hidden="true">
       <span style={{ width: `${progress}%` }} />
-    </div>
-  )
-}
-
-function DocsAmbient() {
-  return (
-    <div className="docs-ambient" aria-hidden="true">
-      <div className="docs-ambient__mesh">
-        {Array.from({ length: 14 }, (_, index) => (
-          <span key={`mesh-${index}`} />
-        ))}
-      </div>
-      <div className="docs-ambient__ribbons">
-        <span />
-        <span />
-      </div>
-      <div className="docs-ambient__snow">
-        {Array.from({ length: 18 }, (_, index) => (
-          <span key={`snow-${index}`} />
-        ))}
-      </div>
     </div>
   )
 }

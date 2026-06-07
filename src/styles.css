@@ -595,7 +595,7 @@ a {
   grid-template-columns: minmax(0, 840px) 200px;
   gap: 24px;
   width: min(1068px, calc(100vw - var(--docs-sidebar-width) - 72px));
-  min-height: calc(100vh - 68px);
+  min-height: 100vh;
   margin: 0 auto;
   margin-left: calc(var(--docs-sidebar-width) + max(36px, (100vw - 1280px) / 2));
 }
@@ -603,9 +603,9 @@ a {
 .sidebar,
 .scroll-spy {
   position: sticky;
-  top: 86px;
+  top: 46px;
   align-self: start;
-  max-height: calc(100vh - 110px);
+  max-height: calc(100vh - 70px);
   overflow: auto;
   padding: 28px 0;
 }
@@ -2603,15 +2603,6 @@ a {
 }
 
 @media (max-width: 1080px) {
-  .topbar {
-    grid-template-columns: minmax(0, 1fr);
-    padding-inline: 20px;
-  }
-
-  .top-links {
-    display: none;
-  }
-
   .docs-layout {
     grid-template-columns: minmax(0, 1fr);
     width: calc(100vw - var(--docs-sidebar-width) - 42px);
@@ -2636,13 +2627,11 @@ a {
 }
 
 @media (max-width: 900px) {
-  .topbar {
-    display: none;
-  }
-
   .mobile-header {
-    position: sticky;
+    position: fixed;
     top: 0;
+    right: 0;
+    left: 0;
     z-index: 30;
     display: flex;
     align-items: center;
@@ -2796,8 +2785,9 @@ a {
   .docs-layout {
     grid-template-columns: 1fr;
     width: calc(100% - 20px);
-    min-height: calc(100vh - var(--docs-mobile-header-height));
+    min-height: 100vh;
     margin: 0 auto;
+    padding-top: var(--docs-mobile-header-height);
   }
 
   .docs-layout > .sidebar {
