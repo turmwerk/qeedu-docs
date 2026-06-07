@@ -1806,13 +1806,56 @@ a {
 }
 
 .doc-article {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: calc(100vh - 140px);
   padding: 46px 54px;
   border: 1px solid var(--docs-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.88);
+  background:
+    linear-gradient(rgba(8, 61, 49, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 61, 49, 0.028) 1px, transparent 1px),
+    rgba(255, 255, 255, 0.9);
+  background-size: 26px 26px;
   box-shadow: var(--docs-shadow);
   backdrop-filter: blur(10px);
+}
+
+.doc-article::before,
+.doc-article::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.doc-article::before {
+  top: -90px;
+  right: -120px;
+  z-index: 0;
+  width: min(520px, 58vw);
+  height: 260px;
+  border: 1px solid rgba(31, 196, 31, 0.12);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 24% 34%, rgba(184, 255, 92, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(5, 8, 7, 0.96), rgba(8, 61, 49, 0.78));
+  opacity: 0.92;
+  transform: rotate(-8deg);
+}
+
+.doc-article::after {
+  inset: 0 auto 0 -38%;
+  z-index: 0;
+  width: 24%;
+  background: linear-gradient(90deg, transparent, rgba(184, 255, 92, 0.14), transparent);
+  opacity: 0.86;
+  animation: docArticleScan 8.4s ease-in-out infinite;
+}
+
+.doc-article > * {
+  position: relative;
+  z-index: 1;
 }
 
 .breadcrumbs {
@@ -1942,6 +1985,8 @@ a {
 }
 
 .article-context__metrics span {
+  position: relative;
+  overflow: hidden;
   display: grid;
   min-height: 68px;
   align-content: center;
@@ -1952,9 +1997,38 @@ a {
   color: #5a6e65;
   font-size: 12px;
   font-weight: 760;
+  transition:
+    transform 170ms ease,
+    border-color 170ms ease,
+    box-shadow 170ms ease;
+}
+
+.article-context__metrics span::before {
+  position: absolute;
+  inset: 0 auto 0 -40%;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, rgba(184, 255, 92, 0.18), transparent);
+  content: "";
+  pointer-events: none;
+  transform: skewX(-10deg);
+  transition: transform 260ms ease;
+}
+
+.article-context__metrics span:hover {
+  border-color: rgba(31, 196, 31, 0.34);
+  box-shadow:
+    0 12px 28px rgba(5, 43, 31, 0.06),
+    0 0 0 4px rgba(31, 196, 31, 0.05);
+  transform: translateY(-1px);
+}
+
+.article-context__metrics span:hover::before {
+  transform: translateX(430%) skewX(-10deg);
 }
 
 .article-context__metrics strong {
+  position: relative;
+  z-index: 1;
   display: block;
   color: #0d7d5f;
   font-size: 24px;
@@ -2036,11 +2110,38 @@ a {
 }
 
 .doc-article h2 {
+  position: relative;
   margin: 34px 0 12px;
+  padding-left: 20px;
   color: #0f352c;
   font-size: 27px;
   line-height: 1.2;
   scroll-margin-top: 92px;
+}
+
+.doc-article h2::before {
+  position: absolute;
+  top: 0.28em;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(31, 196, 31, 0.42);
+  border-radius: 3px;
+  background: #b8ff5c;
+  box-shadow:
+    0 0 0 6px rgba(31, 196, 31, 0.08),
+    0 0 18px rgba(31, 196, 31, 0.24);
+  content: "";
+}
+
+.doc-article h2::after {
+  position: absolute;
+  right: 0;
+  bottom: -8px;
+  left: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(13, 125, 95, 0.32), transparent);
+  content: "";
 }
 
 .doc-article h3 {
@@ -2065,6 +2166,11 @@ a {
   margin-top: 4px;
 }
 
+.doc-article li::marker {
+  color: #0d7d5f;
+  font-weight: 860;
+}
+
 .doc-article a {
   color: #0d7d5f;
   font-weight: 780;
@@ -2074,11 +2180,25 @@ a {
 }
 
 .doc-article blockquote {
+  position: relative;
+  overflow: hidden;
   margin: 22px 0;
-  padding: 14px 18px;
+  padding: 16px 18px 16px 22px;
   border-left: 4px solid #0d7d5f;
   border-radius: 0 8px 8px 0;
-  background: #f1f9f1;
+  background:
+    linear-gradient(90deg, rgba(31, 196, 31, 0.12), transparent 44%),
+    #f1f9f1;
+}
+
+.doc-article blockquote::after {
+  position: absolute;
+  inset: 0 auto 0 -34%;
+  width: 24%;
+  background: linear-gradient(90deg, transparent, rgba(184, 255, 92, 0.2), transparent);
+  content: "";
+  pointer-events: none;
+  animation: docQuoteSweep 6.2s ease-in-out infinite;
 }
 
 .doc-article blockquote p {
@@ -2089,6 +2209,11 @@ a {
   display: block;
   width: 100%;
   overflow-x: auto;
+  margin: 22px 0;
+  border: 1px solid rgba(10, 85, 65, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(5, 43, 31, 0.05);
   border-spacing: 0;
   border-collapse: collapse;
 }
@@ -2778,6 +2903,30 @@ a {
   48% {
     opacity: 0.78;
     transform: translate3d(6px, -5px, 0) scale(1.08);
+  }
+}
+
+@keyframes docArticleScan {
+  0%,
+  42% {
+    transform: translateX(0) skewX(-12deg);
+  }
+
+  78%,
+  100% {
+    transform: translateX(560%) skewX(-12deg);
+  }
+}
+
+@keyframes docQuoteSweep {
+  0%,
+  48% {
+    transform: translateX(0) skewX(-10deg);
+  }
+
+  76%,
+  100% {
+    transform: translateX(520%) skewX(-10deg);
   }
 }
 
