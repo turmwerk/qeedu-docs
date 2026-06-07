@@ -568,7 +568,7 @@ a {
   text-transform: uppercase;
 }
 
-.sidebar a {
+.sidebar section a {
   position: relative;
   overflow: hidden;
   display: flex;
@@ -590,7 +590,7 @@ a {
     transform 160ms ease;
 }
 
-.sidebar a::after {
+.sidebar section a::after {
   position: absolute;
   inset: 0 auto 0 -44%;
   width: 32%;
@@ -601,14 +601,14 @@ a {
   transition: transform 260ms ease;
 }
 
-.sidebar a svg {
+.sidebar section a svg {
   position: relative;
   z-index: 1;
   flex: 0 0 auto;
 }
 
-.sidebar a:hover,
-.sidebar a.active {
+.sidebar section a:hover,
+.sidebar section a.active {
   border-left-color: #b8ff5c;
   background: rgba(31, 196, 31, 0.1);
   color: #b8ff5c;
@@ -616,8 +616,8 @@ a {
   transform: translateX(2px);
 }
 
-.sidebar a:hover::after,
-.sidebar a.active::after {
+.sidebar section a:hover::after,
+.sidebar section a.active::after {
   transform: translateX(430%) skewX(-10deg);
 }
 
@@ -2647,14 +2647,14 @@ a {
 
 :root[data-theme="dark"] .sidebar-profile small,
 :root[data-theme="dark"] .sidebar h2,
-:root[data-theme="dark"] .sidebar a,
+:root[data-theme="dark"] .sidebar section a,
 :root[data-theme="dark"] .brand small {
   color: var(--docs-muted);
 }
 
 :root[data-theme="dark"] .sidebar-title,
-:root[data-theme="dark"] .sidebar a:hover,
-:root[data-theme="dark"] .sidebar a.active,
+:root[data-theme="dark"] .sidebar section a:hover,
+:root[data-theme="dark"] .sidebar section a.active,
 :root[data-theme="dark"] .landing-section__head span,
 :root[data-theme="dark"] .breadcrumbs,
 :root[data-theme="dark"] .doc-article a,
@@ -2662,15 +2662,15 @@ a {
   color: var(--docs-accent);
 }
 
-:root[data-theme="dark"] .sidebar a:hover,
-:root[data-theme="dark"] .sidebar a.active {
+:root[data-theme="dark"] .sidebar section a:hover,
+:root[data-theme="dark"] .sidebar section a.active {
   border-left-color: var(--docs-accent);
   background: rgba(31, 196, 31, 0.12);
 }
 
 :root[data-theme="light"] .sidebar-profile,
 :root[data-theme="light"] .sidebar-profile strong,
-:root[data-theme="light"] .sidebar a,
+:root[data-theme="light"] .sidebar section a,
 :root[data-theme="light"] .sidebar h2 {
   color: var(--docs-text);
 }
@@ -2680,18 +2680,18 @@ a {
   color: var(--docs-muted);
 }
 
-:root[data-theme="light"] .sidebar a {
+:root[data-theme="light"] .sidebar section a {
   color: var(--docs-muted);
 }
 
 :root[data-theme="light"] .sidebar-title,
-:root[data-theme="light"] .sidebar a:hover,
-:root[data-theme="light"] .sidebar a.active {
+:root[data-theme="light"] .sidebar section a:hover,
+:root[data-theme="light"] .sidebar section a.active {
   color: var(--docs-accent);
 }
 
-:root[data-theme="light"] .sidebar a:hover,
-:root[data-theme="light"] .sidebar a.active {
+:root[data-theme="light"] .sidebar section a:hover,
+:root[data-theme="light"] .sidebar section a.active {
   border-left-color: var(--docs-accent);
   background: rgba(31, 196, 31, 0.1);
 }
@@ -2763,6 +2763,7 @@ a {
 :root[data-theme="dark"] .landing-console,
 :root[data-theme="dark"] .landing-stats article,
 :root[data-theme="dark"] .landing-flow-map,
+:root[data-theme="dark"] .landing-flow-map__steps article,
 :root[data-theme="dark"] .docs-command-center,
 :root[data-theme="dark"] .docs-command-center__copy,
 :root[data-theme="dark"] .docs-command-center__screen,
@@ -2833,6 +2834,7 @@ a {
 :root[data-theme="dark"] .docs-landing h1,
 :root[data-theme="dark"] .landing-stats span,
 :root[data-theme="dark"] .landing-flow-map__status strong,
+:root[data-theme="dark"] .landing-flow-map__steps strong,
 :root[data-theme="dark"] .docs-command-center__bar strong,
 :root[data-theme="dark"] .docs-command-center__copy h2,
 :root[data-theme="dark"] .docs-command-center__run h3,
@@ -2864,6 +2866,7 @@ a {
 :root[data-theme="dark"] .delivery-lane p,
 :root[data-theme="dark"] .quick-card p,
 :root[data-theme="dark"] .landing-stats p,
+:root[data-theme="dark"] .landing-flow-map__steps small,
 :root[data-theme="dark"] .docs-command-center__copy p,
 :root[data-theme="dark"] .docs-command-center__run p,
 :root[data-theme="dark"] .docs-command-center__metrics small,
@@ -3095,7 +3098,7 @@ a {
     font-size: 20px;
   }
 
-  .mobile-drawer .sidebar a {
+  .mobile-drawer .sidebar section a {
     min-height: 40px;
     font-size: 14px;
   }
@@ -3314,7 +3317,7 @@ a {
     font-size: 11px;
   }
 
-  .mobile-drawer .sidebar a {
+  .mobile-drawer .sidebar section a {
     min-height: 38px;
     padding-inline: 8px;
     font-size: 13px;
