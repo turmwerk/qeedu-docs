@@ -171,6 +171,53 @@ const deliveryLanes: Array<{ title: string; desc: string; icon: IconComponent; h
   },
 ]
 
+const docsCommandRuns: Array<{
+  title: string
+  command: string
+  detail: string
+  accent: 'mint' | 'blue' | 'amber' | 'violet'
+  icon: IconComponent
+  steps: string[]
+  outputs: string[]
+}> = [
+  {
+    title: '新用户快速试用',
+    command: 'cloud.run --path quick-start',
+    detail: '从 Cloud 入口、快速开始、核心概念到人工复核说明，形成第一次演示的最短路线。',
+    accent: 'mint',
+    icon: Cloud,
+    steps: ['打开 Cloud', '选择校园场景', '确认输出边界'],
+    outputs: ['快速开始', '核心概念', 'Cloud 版本'],
+  },
+  {
+    title: '社区版自部署排障',
+    command: 'deploy.trace --env gateway',
+    detail: '把仓库、环境变量、模型网关和 Cloudflare Pages 发布顺序串起来，方便定位部署卡点。',
+    accent: 'blue',
+    icon: Github,
+    steps: ['拉取仓库', '配置模型网关', '发布前端'],
+    outputs: ['部署总览', '社区自部署', '环境变量'],
+  },
+  {
+    title: '教育版试点准备',
+    command: 'pilot.plan --scope college',
+    detail: '把低风险场景、知识库初始化、培训交付和验收指标放在同一条试点准备线里。',
+    accent: 'amber',
+    icon: School,
+    steps: ['确定试点部门', '整理校本资料', '定义成效指标'],
+    outputs: ['试点手册', '知识库初始化', '教育版交付'],
+  },
+  {
+    title: '安全审计问答',
+    command: 'trust.review --human-in-loop',
+    detail: '围绕数据边界、权限隔离、日志留痕和人工复核准备管理者常见问题回答。',
+    accent: 'violet',
+    icon: ShieldCheck,
+    steps: ['划分数据边界', '确认权限隔离', '保留复核记录'],
+    outputs: ['数据边界', '私有化部署', '成效指标'],
+  },
+]
+
 const readingPaths: Array<{
   title: string
   desc: string
@@ -586,6 +633,8 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         </div>
       </section>
 
+      <DocsCommandCenter pageCount={pageCount} groupCount={groupCount} />
+
       <section className="landing-section" id="start-here">
         <div className="landing-section__head">
           <span>Start Here</span>
@@ -659,6 +708,90 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         </div>
       </section>
     </article>
+  )
+}
+
+function DocsCommandCenter({ pageCount, groupCount }: { pageCount: number; groupCount: number }) {
+  const [activeRunIndex, setActiveRunIndex] = useState(0)
+  const activeRun = docsCommandRuns[activeRunIndex]
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveRunIndex((index) => (index + 1) % docsCommandRuns.length)
+    }, 3400)
+
+    return () => window.clearInterval(timer)
+  }, [])
+
+  return (
+    <section className={`docs-command-center accent-${activeRun.accent}`} aria-label="文档操作态势">
+      <div className="docs-command-center__copy">
+        <span>Docs Command</span>
+        <h2>把阅读入口组织成可执行的文档任务</h2>
+        <p>每条路线都对应一个实际交付动作：试用、部署、试点或安全复核。用户不需要在目录里盲找，先选目标，再进入文档链路。</p>
+        <div className="docs-command-center__metrics">
+          <strong>
+            {pageCount}
+            <small>文档页</small>
+          </strong>
+          <strong>
+            {groupCount}
+            <small>导航分组</small>
+          </strong>
+          <strong>
+            {docsCommandRuns.length}
+            <small>任务路线</small>
+          </strong>
+        </div>
+      </div>
+      <div className="docs-command-center__screen">
+        <div className="docs-command-center__bar">
+          <span />
+          <span />
+          <span />
+          <strong>{activeRun.command}</strong>
+        </div>
+        <div className="docs-command-center__map" aria-hidden="true">
+          {Array.from({ length: 16 }, (_, index) => (
+            <span key={`docs-command-node-${index}`} />
+          ))}
+        </div>
+        <div className="docs-command-center__tabs">
+          {docsCommandRuns.map((run, index) => (
+            <button
+              className={index === activeRunIndex ? 'active' : undefined}
+              key={run.title}
+              type="button"
+              onClick={() => setActiveRunIndex(index)}
+            >
+              <run.icon size={16} />
+              {run.title}
+            </button>
+          ))}
+        </div>
+        <div className="docs-command-center__run">
+          <div>
+            <activeRun.icon size={26} />
+            <span>{activeRun.command}</span>
+          </div>
+          <h3>{activeRun.title}</h3>
+          <p>{activeRun.detail}</p>
+          <div className="docs-command-center__steps">
+            {activeRun.steps.map((step, index) => (
+              <span key={step}>
+                {String(index + 1).padStart(2, '0')}
+                <em>{step}</em>
+              </span>
+            ))}
+          </div>
+          <div className="docs-command-center__outputs">
+            {activeRun.outputs.map((output) => (
+              <strong key={output}>{output}</strong>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
