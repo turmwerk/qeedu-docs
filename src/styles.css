@@ -69,6 +69,7 @@ body {
 
 html {
   scroll-padding-top: 48px;
+  scroll-behavior: smooth;
 }
 
 a {
@@ -505,28 +506,12 @@ a {
 }
 
 .sidebar-profile {
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding: 8px 0 14px;
+  display: block;
+  margin-bottom: 18px;
+  padding: 8px 4px 18px;
+  border-bottom: 1px solid var(--docs-border);
   color: #f7fff2;
-  text-align: center;
-}
-
-.sidebar-profile__logo {
-  width: 128px;
-  height: 128px;
-  border: 1px solid rgba(113, 42, 173, 0.16);
-  border-radius: 50%;
-  background: #ffffff;
-  object-fit: cover;
-  box-shadow: 0 18px 40px rgba(81, 25, 126, 0.14);
-  transition: transform 220ms ease;
-}
-
-.sidebar-profile:hover .sidebar-profile__logo {
-  transform: scale(1.05);
+  text-align: left;
 }
 
 .sidebar-profile strong,
@@ -535,7 +520,7 @@ a {
 }
 
 .sidebar-profile strong {
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1.2;
 }
 
@@ -543,16 +528,6 @@ a {
   margin-top: 3px;
   color: rgba(223, 255, 208, 0.62);
   font-size: 13px;
-}
-
-.sidebar-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
-  color: #b8ff5c;
-  font-size: 13px;
-  font-weight: 820;
 }
 
 .sidebar section {
@@ -624,6 +599,10 @@ a {
 .content {
   min-width: 0;
   padding: 46px 0 82px;
+}
+
+.content__page {
+  animation: docsPageSlide 260ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 .docs-landing {
@@ -1748,13 +1727,13 @@ a {
 
 .landing-aside {
   position: sticky;
-  top: 86px;
+  top: 0;
   align-self: start;
   display: grid;
   gap: 9px;
   width: 200px;
-  max-height: calc(100vh - 86px);
-  padding: 28px 0 24px;
+  max-height: 100vh;
+  padding: 0 0 24px;
   color: #5d7068;
 }
 
@@ -2353,12 +2332,14 @@ a {
 }
 
 .scroll-spy {
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
   gap: 18px;
   width: var(--docs-scroll-spy-width);
-  max-height: calc(100vh - 86px);
-  padding: 28px 0 24px;
+  max-height: 100vh;
+  padding: 0 0 24px;
   overflow-y: auto;
   color: #5d7068;
   font-size: 14px;
@@ -2615,17 +2596,21 @@ a {
   display: none;
 }
 
-.landing-flow-map__steps article,
-.content {
+.landing-flow-map__steps article {
   animation: none;
+}
+
+.track-lab__panel,
+.reading-path-lab__panel,
+.docs-command-center__run {
+  animation: docsPanelSlide 240ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 :root[data-theme="dark"] .docs-progress {
   background: rgba(255, 255, 255, 0.08);
 }
 
-:root[data-theme="dark"] .brand-logo,
-:root[data-theme="dark"] .sidebar-profile__logo {
+:root[data-theme="dark"] .brand-logo {
   border-color: var(--docs-border);
   box-shadow: none;
 }
@@ -2968,6 +2953,30 @@ a {
   }
 }
 
+@keyframes docsPageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes docsPanelSlide {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @media (max-width: 1080px) {
   .docs-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -3087,11 +3096,6 @@ a {
     width: 100%;
     height: 100%;
     padding: 26px 20px;
-  }
-
-  .mobile-drawer .sidebar-profile__logo {
-    width: 118px;
-    height: 118px;
   }
 
   .mobile-drawer .sidebar-profile strong {
@@ -3308,11 +3312,6 @@ a {
     width: min(56vw, 220px);
   }
 
-  .mobile-drawer .sidebar-profile__logo {
-    width: 104px;
-    height: 104px;
-  }
-
   .sidebar h2 {
     font-size: 11px;
   }
@@ -3409,6 +3408,10 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

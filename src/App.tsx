@@ -15,12 +15,11 @@ import {
   Menu,
   Rocket,
   School,
-  Search,
   ShieldCheck,
   Sparkles,
   Users,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
@@ -398,6 +397,7 @@ function parseMdx(source: string) {
 
 function AppLayout() {
   const location = useLocation()
+  const previousPath = useRef(location.pathname)
   const isLanding = location.pathname === '/'
   const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
   const headings = isLanding ? landingHeadings : getHeadings(current.content)
@@ -407,6 +407,13 @@ function AppLayout() {
   useEffect(() => {
     setNavOpen(false)
     setTocOpen(false)
+
+    if (previousPath.current !== location.pathname) {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      })
+      previousPath.current = location.pathname
+    }
   }, [location.pathname])
 
   useEffect(() => {
@@ -455,7 +462,7 @@ function AppLayout() {
         <button className="drawer-overlay" type="button" aria-label="关闭菜单" onClick={closeDrawers} />
       )}
 
-      <aside className={navOpen ? 'mobile-drawer is-open' : 'mobile-drawer'} aria-label="移动端文档导航">
+      <aside className={navOpen ? 'mobile-drawer is-open' : 'mobile-drawer'} aria-label="移动端菜单">
         <DocsSidebar onNavigate={() => setNavOpen(false)} />
       </aside>
 
@@ -467,6 +474,7 @@ function AppLayout() {
         <DocsSidebar />
 
         <main className="content">
+          <div className="content__page" key={location.pathname}>
           <Routes>
             <Route path="/" element={<DocsLanding pageCount={pages.length} groupCount={groups.length} />} />
             {pages.map((page) => (
@@ -474,6 +482,7 @@ function AppLayout() {
             ))}
             <Route path="*" element={<DocArticle page={current} />} />
           </Routes>
+          </div>
         </main>
 
         {isLanding ? <DocsLandingAside /> : <Toc headings={headings} />}
@@ -639,7 +648,7 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
             </button>
           ))}
         </div>
-        <div className="track-lab__panel">
+        <div className="track-lab__panel" key={activeTrack.title}>
           <div className="track-lab__copy">
             <span>{activeTrack.subtitle}</span>
             <h2>{activeTrack.title}</h2>
@@ -737,7 +746,7 @@ function DocsCommandCenter({ pageCount, groupCount }: { pageCount: number; group
             </button>
           ))}
         </div>
-        <div className="docs-command-center__run">
+        <div className="docs-command-center__run" key={activeRun.title}>
           <div>
             <activeRun.icon size={26} />
             <span>{activeRun.command}</span>
@@ -787,7 +796,7 @@ function ReadingPathLab() {
             </button>
           ))}
         </div>
-        <div className="reading-path-lab__panel">
+        <div className="reading-path-lab__panel" key={activePath.title}>
           <div className="reading-path-lab__copy">
             <span>{activePath.title}</span>
             <h3>{activePath.desc}</h3>
@@ -817,7 +826,7 @@ function ReadingPathLab() {
 function MobileHeader({ onOpenNav, onOpenToc }: { onOpenNav: () => void; onOpenToc: () => void }) {
   return (
     <header className="mobile-header">
-      <button className="mobile-header__button" type="button" aria-label="打开文档导航" onClick={onOpenNav}>
+      <button className="mobile-header__button" type="button" aria-label="打开菜单" onClick={onOpenNav}>
         <Menu size={22} />
       </button>
       <Link className="mobile-header__brand" to="/">
@@ -835,17 +844,11 @@ function DocsSidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <aside className="sidebar">
       <Link className="sidebar-profile" to="/" onClick={onNavigate}>
-        <img className="sidebar-profile__logo" src="/qeedu-logo.png" alt="" />
         <span>
           <strong>QeEdu Docs</strong>
           <small>启育文档中心</small>
         </span>
       </Link>
-      <div className="sidebar-title">
-        <Menu size={16} />
-        文档导航
-      </div>
-      <DocsSearch compact />
       {groups.map((group) => (
         <section key={group.title}>
           <h2>{group.title}</h2>
@@ -862,88 +865,6 @@ function DocsSidebar({ onNavigate }: { onNavigate?: () => void }) {
         </section>
       ))}
     </aside>
-  )
-}
-
-function DocsSearch({ compact = false }: { compact?: boolean }) {
-  const location = useLocation()
-  const [query, setQuery] = useState('')
-  const [panelOpen, setPanelOpen] = useState(false)
-  const normalizedQuery = normalizeSearchText(query)
-  const results = useMemo(() => searchPages(query), [query])
-  const quickLinks = useMemo(
-    () =>
-      [
-        'zh/getting-started/quick-start',
-        'zh/deployment/community-self-hosting',
-        'zh/delivery/pilot-playbook',
-        'zh/security/data-boundary',
-      ]
-        .map((slug) => pages.find((page) => page.slug === slug))
-        .filter((page): page is DocPage => Boolean(page)),
-    [],
-  )
-
-  useEffect(() => {
-    setPanelOpen(false)
-  }, [location.pathname])
-
-  function closeLater() {
-    window.setTimeout(() => setPanelOpen(false), 120)
-  }
-
-  return (
-    <div className={compact ? 'search-box search-box--compact' : 'search-box'} onBlur={closeLater}>
-      <label className="search-box__input">
-        <Search size={16} />
-        <input
-          value={query}
-          placeholder={compact ? '搜索' : '搜索文档、部署、安全、场景'}
-          aria-label="搜索文档"
-          onChange={(event) => setQuery(event.target.value)}
-          onFocus={() => setPanelOpen(true)}
-        />
-      </label>
-      {panelOpen && (
-        <div className="search-results" role="region" aria-label="文档搜索结果">
-          {normalizedQuery ? (
-            <>
-              <div className="search-results__meta">
-                <strong>{results.length ? `${results.length} 个结果` : '没有匹配结果'}</strong>
-                <span>{query}</span>
-              </div>
-              {results.length > 0 ? (
-                results.map(({ page, excerpt }) => (
-                  <Link className="search-result" key={page.slug} to={`/${page.slug}`}>
-                    <span>{page.group}</span>
-                    <strong>{page.title}</strong>
-                    <p>{excerpt}</p>
-                  </Link>
-                ))
-              ) : (
-                <div className="search-empty">
-                  <p>换一个关键词试试，例如“私有化”、“知识库”、“Cloud”或“数据边界”。</p>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="search-results__meta">
-                <strong>常用入口</strong>
-                <span>快速跳转</span>
-              </div>
-              {quickLinks.map((page) => (
-                <Link className="search-result" key={page.slug} to={`/${page.slug}`}>
-                  <span>{page.group}</span>
-                  <strong>{page.title}</strong>
-                  <p>{page.description}</p>
-                </Link>
-              ))}
-            </>
-          )}
-        </div>
-      )}
-    </div>
   )
 }
 
@@ -1199,64 +1120,6 @@ function getHeadings(content: string) {
       const text = line.replace(/^##\s+/, '').trim()
       return { text, id: slugifyHeading(text) }
     })
-}
-
-function searchPages(query: string) {
-  const terms = normalizeSearchText(query).split(/\s+/).filter(Boolean)
-
-  if (terms.length === 0) {
-    return []
-  }
-
-  return pages
-    .map((page) => {
-      const title = normalizeSearchText(page.title)
-      const description = normalizeSearchText(page.description)
-      const group = normalizeSearchText(page.group)
-      const content = normalizeSearchText(stripMarkdown(page.content))
-      const slug = normalizeSearchText(page.slug)
-      const haystack = `${title} ${description} ${group} ${content} ${slug}`
-      let score = 0
-
-      for (const term of terms) {
-        if (title.includes(term)) score += 8
-        if (description.includes(term)) score += 4
-        if (group.includes(term)) score += 3
-        if (slug.includes(term)) score += 2
-        if (content.includes(term)) score += 1
-        if (!haystack.includes(term)) score -= 2
-      }
-
-      return {
-        page,
-        score,
-        excerpt: createSearchExcerpt(page, terms),
-      }
-    })
-    .filter((result) => result.score > 0)
-    .sort((a, b) => b.score - a.score || a.page.title.localeCompare(b.page.title))
-    .slice(0, 7)
-}
-
-function createSearchExcerpt(page: DocPage, terms: string[]) {
-  const body = stripMarkdown(page.content).replace(/\s+/g, ' ').trim()
-  const normalizedBody = normalizeSearchText(body)
-  const hitIndex = terms
-    .map((term) => normalizedBody.indexOf(term))
-    .filter((index) => index >= 0)
-    .sort((a, b) => a - b)[0]
-
-  if (hitIndex === undefined) {
-    return page.description || body.slice(0, 96)
-  }
-
-  const start = Math.max(0, hitIndex - 36)
-  const excerpt = body.slice(start, start + 116)
-  return `${start > 0 ? '...' : ''}${excerpt}${start + 116 < body.length ? '...' : ''}`
-}
-
-function normalizeSearchText(value: string) {
-  return value.toLowerCase().replace(/\s+/g, ' ').trim()
 }
 
 function stripMarkdown(value: string) {
