@@ -5,6 +5,7 @@ import {
   Check,
   ChevronRight,
   Cloud,
+  Copy,
   DatabaseZap,
   FileText,
   Github,
@@ -18,7 +19,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { isValidElement, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
@@ -385,6 +386,7 @@ const dynamicButtonSelector = [
   '.float-controls__button',
   '.scroll-spy__nav button',
   '.route-path a',
+  '.md-code-copy',
 ].join(', ')
 
 function parseMdx(source: string) {
@@ -555,7 +557,7 @@ function AppLayout() {
       )}
 
       <aside className={navOpen ? 'mobile-drawer is-open' : 'mobile-drawer'} aria-label="移动端菜单">
-        <DocsSidebar onNavigate={() => setNavOpen(false)} />
+        <DocsSidebar isLanding={isLanding} page={current} onNavigate={() => setNavOpen(false)} />
       </aside>
 
       <aside className={tocOpen ? 'mobile-toc-drawer is-open' : 'mobile-toc-drawer'} aria-label="移动端本页目录">
@@ -563,7 +565,7 @@ function AppLayout() {
       </aside>
 
       <div className="docs-layout">
-        <DocsSidebar />
+        <DocsSidebar isLanding={isLanding} page={current} />
 
         <main className="content">
           <div className="content__page" key={location.pathname}>
@@ -948,7 +950,11 @@ function MobileHeader({ onOpenNav, onOpenToc }: { onOpenNav: () => void; onOpenT
   )
 }
 
-function DocsSidebar({ onNavigate }: { onNavigate?: () => void }) {
+function DocsSidebar({ page, isLanding, onNavigate }: { page: DocPage; isLanding: boolean; onNavigate?: () => void }) {
+  const currentHeadings = isLanding ? landingHeadings : getHeadings(page.content).slice(0, 5)
+  const currentIndex = pages.findIndex((item) => item.slug === page.slug)
+  const nextPage = !isLanding && currentIndex >= 0 && currentIndex < pages.length - 1 ? pages[currentIndex + 1] : undefined
+
   return (
     <aside className="sidebar">
       <Link className="sidebar-profile" to="/" onClick={onNavigate}>
@@ -957,6 +963,23 @@ function DocsSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <small>启育文档中心</small>
         </span>
       </Link>
+      {currentHeadings.length > 0 && (
+        <section className="sidebar-page-context" aria-label="本页目录">
+          <h2>本页目录</h2>
+          {currentHeadings.map((heading, index) => (
+            <a href={`#${heading.id}`} key={heading.id} onClick={onNavigate}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              {heading.text}
+            </a>
+          ))}
+          {nextPage && (
+            <Link className="sidebar-page-context__next" to={`/${nextPage.slug}`} onClick={onNavigate}>
+              <span>Next</span>
+              {nextPage.title}
+            </Link>
+          )}
+        </section>
+      )}
       {groups.map((group) => (
         <section key={group.title}>
           <h2>{group.title}</h2>
@@ -1063,6 +1086,106 @@ function Toc({
   )
 }
 
+type MarkdownElementProps = {
+  children?: React.ReactNode
+  className?: string
+}
+
+function flattenMarkdownText(value: React.ReactNode): string {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value)
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(flattenMarkdownText).join('')
+  }
+
+  if (isValidElement<MarkdownElementProps>(value)) {
+    return flattenMarkdownText(value.props.children)
+  }
+
+  return ''
+}
+
+function readCodeBlock(children: React.ReactNode) {
+  const firstChild = Array.isArray(children) ? children.find((child) => isValidElement(child)) : children
+  const className = isValidElement<MarkdownElementProps>(firstChild) ? firstChild.props.className ?? '' : ''
+  const language = className.match(/language-([^\s]+)/)?.[1] ?? ''
+  const code = flattenMarkdownText(children).replace(/\n$/, '')
+
+  return { code, language }
+}
+
+async function writeClipboardText(value: string) {
+  try {
+    await navigator.clipboard.writeText(value)
+    return true
+  } catch {
+    const textArea = document.createElement('textarea')
+    textArea.value = value
+    textArea.setAttribute('readonly', 'true')
+    textArea.style.position = 'fixed'
+    textArea.style.top = '-9999px'
+    textArea.style.left = '-9999px'
+    document.body.appendChild(textArea)
+    textArea.select()
+
+    try {
+      return document.execCommand('copy')
+    } finally {
+      document.body.removeChild(textArea)
+    }
+  }
+}
+
+function MarkdownPre({ children }: { children?: React.ReactNode }) {
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  const resetTimer = useRef<number | undefined>(undefined)
+  const { code, language } = readCodeBlock(children)
+
+  useEffect(() => {
+    return () => window.clearTimeout(resetTimer.current)
+  }, [])
+
+  async function copyCode() {
+    if (!code) {
+      return
+    }
+
+    window.clearTimeout(resetTimer.current)
+
+    try {
+      const copied = await writeClipboardText(code)
+      if (!copied) {
+        throw new Error('copy failed')
+      }
+      setCopyState('copied')
+    } catch {
+      setCopyState('failed')
+    }
+
+    resetTimer.current = window.setTimeout(() => setCopyState('idle'), 1600)
+  }
+
+  const copyLabel = copyState === 'copied' ? '已复制' : copyState === 'failed' ? '失败' : '复制'
+
+  return (
+    <div className="md-code-block">
+      {language && <span className="md-code-lang">{language}</span>}
+      <button
+        className={copyState === 'idle' ? 'md-code-copy' : `md-code-copy is-${copyState}`}
+        disabled={!code}
+        type="button"
+        onClick={copyCode}
+      >
+        {copyState === 'copied' ? <Check size={14} /> : <Copy size={14} />}
+        {copyLabel}
+      </button>
+      <pre>{children}</pre>
+    </div>
+  )
+}
+
 function DocArticle({ page }: { page: DocPage }) {
   const currentIndex = pages.findIndex((item) => item.slug === page.slug)
   const previousPage = currentIndex > 0 ? pages[currentIndex - 1] : undefined
@@ -1075,19 +1198,21 @@ function DocArticle({ page }: { page: DocPage }) {
     <article className="doc-article">
       <h1>{page.title}</h1>
       <p className="lead">{page.description}</p>
-      <ArticleContextPanel
-        headings={articleHeadings}
-        nextPage={nextPage}
-        page={page}
-        readingMinutes={readingMinutes}
-        relatedPages={relatedPages}
-      />
+      <div className="article-top-meta" aria-label="阅读信息">
+        <span>
+          <strong>{readingMinutes}</strong>
+          分钟阅读
+        </span>
+        <span>{page.group}</span>
+        <span>{articleHeadings.length} 个重点</span>
+      </div>
       <ReactMarkdown
         components={{
           h2: ({ children }) => {
             const text = flattenNodeText(children)
             return <h2 id={slugifyHeading(text)}>{children}</h2>
           },
+          pre: ({ children }) => <MarkdownPre>{children}</MarkdownPre>,
         }}
         remarkPlugins={[remarkGfm]}
       >
@@ -1095,70 +1220,6 @@ function DocArticle({ page }: { page: DocPage }) {
       </ReactMarkdown>
       <DocFooterNav previousPage={previousPage} nextPage={nextPage} relatedPages={relatedPages} />
     </article>
-  )
-}
-
-function ArticleContextPanel({
-  page,
-  headings,
-  readingMinutes,
-  nextPage,
-  relatedPages,
-}: {
-  page: DocPage
-  headings: Array<{ text: string; id: string }>
-  readingMinutes: number
-  nextPage?: DocPage
-  relatedPages: DocPage[]
-}) {
-  const primaryNext = nextPage ?? relatedPages[0]
-
-  return (
-    <section className="article-context" aria-label="阅读上下文">
-      <div className="article-context__signals" aria-hidden="true">
-        {Array.from({ length: 12 }, (_, index) => (
-          <span key={`article-context-signal-${index}`} />
-        ))}
-      </div>
-      <div className="article-context__summary">
-        <span>Reading Context</span>
-        <h2>{page.group}</h2>
-        <p>先确认本页在文档链路里的位置，再进入正文细节。</p>
-      </div>
-      <div className="article-context__metrics">
-        <span>
-          <strong>{readingMinutes}</strong>
-          分钟阅读
-        </span>
-        <span>
-          <strong>{headings.length}</strong>
-          个重点
-        </span>
-        <span>
-          <strong>{relatedPages.length}</strong>
-          篇同组
-        </span>
-      </div>
-      <div className="article-context__anchors">
-        {headings.length > 0 ? (
-          headings.map((heading, index) => (
-            <a href={`#${heading.id}`} key={heading.id}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              {heading.text}
-            </a>
-          ))
-        ) : (
-          <span>正文会继续补充结构化小节。</span>
-        )}
-      </div>
-      {primaryNext && (
-        <Link className="article-context__next" to={`/${primaryNext.slug}`}>
-          <span>下一步</span>
-          <strong>{primaryNext.title}</strong>
-          <ChevronRight size={16} />
-        </Link>
-      )}
-    </section>
   )
 }
 
