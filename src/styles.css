@@ -1,6 +1,11 @@
 :root {
-  --docs-sidebar-width: 260px;
+  --docs-sidebar-width: 230px;
   --docs-mobile-header-height: 62px;
+  --docs-content-width: 1120px;
+  --docs-desktop-content-gutter: clamp(6px, 1vw, 10px);
+  --docs-desktop-content-end-gutter: 64px;
+  --docs-view-aside-gap: 28px;
+  --docs-scroll-spy-width: 180px;
   --docs-bg: #fbfdf9;
   --docs-text: #10221c;
   --docs-muted: #526a60;
@@ -60,7 +65,7 @@ body {
 }
 
 html {
-  scroll-padding-top: 92px;
+  scroll-padding-top: 48px;
 }
 
 a {
@@ -385,12 +390,17 @@ a {
 
 .docs-layout {
   display: grid;
-  grid-template-columns: minmax(0, 840px) 200px;
-  gap: 24px;
-  width: min(1068px, calc(100vw - var(--docs-sidebar-width) - 72px));
+  grid-template-columns: minmax(0, 1fr) var(--docs-scroll-spy-width);
+  gap: var(--docs-view-aside-gap);
+  width: min(
+    var(--docs-content-width),
+    calc(
+      100vw - var(--docs-sidebar-width) - var(--docs-desktop-content-gutter) -
+        var(--docs-desktop-content-end-gutter)
+    )
+  );
   min-height: 100vh;
-  margin: 0 auto;
-  margin-left: calc(var(--docs-sidebar-width) + max(36px, (100vw - 1280px) / 2));
+  margin: 0 auto 0 calc(var(--docs-sidebar-width) + var(--docs-desktop-content-gutter));
 }
 
 .sidebar,
@@ -458,8 +468,8 @@ a {
 }
 
 .sidebar-profile__logo {
-  width: 132px;
-  height: 132px;
+  width: 128px;
+  height: 128px;
   border: 1px solid rgba(113, 42, 173, 0.16);
   border-radius: 50%;
   background: #ffffff;
@@ -2299,7 +2309,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  width: 200px;
+  width: var(--docs-scroll-spy-width);
   max-height: calc(100vh - 86px);
   padding: 28px 0 24px;
   overflow-y: auto;
@@ -2584,8 +2594,8 @@ a {
 @media (max-width: 1080px) {
   .docs-layout {
     grid-template-columns: minmax(0, 1fr);
-    width: calc(100vw - var(--docs-sidebar-width) - 42px);
-    margin-left: calc(var(--docs-sidebar-width) + 22px);
+    width: calc(100vw - var(--docs-sidebar-width) - 32px);
+    margin-left: calc(var(--docs-sidebar-width) + 16px);
   }
 
   .scroll-spy {
@@ -2606,6 +2616,14 @@ a {
 }
 
 @media (max-width: 900px) {
+  :root {
+    --docs-sidebar-width: min(82vw, 320px);
+  }
+
+  html {
+    scroll-padding-top: calc(var(--docs-mobile-header-height) + 18px);
+  }
+
   .mobile-header {
     position: fixed;
     top: 0;
@@ -2680,7 +2698,7 @@ a {
 
   .mobile-drawer {
     left: 0;
-    width: min(74vw, 260px);
+    width: min(56vw, 220px);
     transform: translateX(-100%);
   }
 
@@ -2691,7 +2709,7 @@ a {
   .mobile-drawer .sidebar {
     width: 100%;
     height: 100%;
-    padding: 22px 16px;
+    padding: 26px 20px;
   }
 
   .mobile-drawer .sidebar-profile__logo {
@@ -2710,7 +2728,7 @@ a {
 
   .mobile-toc-drawer {
     right: 0;
-    width: clamp(132px, 42vw, 168px);
+    width: clamp(124px, 36vw, 148px);
     border-left: 1px solid #dfece2;
     background: rgba(248, 252, 247, 0.98);
     transform: translateX(100%);
@@ -2781,10 +2799,10 @@ a {
 
   .docs-layout {
     grid-template-columns: 1fr;
-    width: calc(100% - 20px);
+    width: 100%;
     min-height: 100vh;
     margin: 0 auto;
-    padding-top: var(--docs-mobile-header-height);
+    padding: var(--docs-mobile-header-height) 18px 0;
   }
 
   .docs-layout > .sidebar {
@@ -2910,7 +2928,7 @@ a {
 
 @media (max-width: 520px) {
   .mobile-drawer {
-    width: min(62vw, 220px);
+    width: min(56vw, 220px);
   }
 
   .mobile-drawer .sidebar-profile__logo {

@@ -171,6 +171,13 @@ const deliveryLanes: Array<{ title: string; desc: string; icon: IconComponent; h
   },
 ]
 
+const landingHeadings = [
+  { text: '快速开始', id: 'start-here' },
+  { text: '阅读路径', id: 'reading-paths' },
+  { text: '产品线地图', id: 'product-tracks' },
+  { text: '试点与交付', id: 'delivery-docs' },
+]
+
 const docsCommandRuns: Array<{
   title: string
   command: string
@@ -393,7 +400,7 @@ function AppLayout() {
   const location = useLocation()
   const isLanding = location.pathname === '/'
   const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
-  const headings = isLanding ? [] : getHeadings(current.content)
+  const headings = isLanding ? landingHeadings : getHeadings(current.content)
   const [navOpen, setNavOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
 
@@ -960,7 +967,7 @@ function Toc({
       const ratio = max <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / max))
       setProgress(Math.round(ratio * 100))
 
-      const threshold = window.scrollY + (mobile ? 72 : 110)
+      const threshold = window.scrollY + (mobile ? 72 : 46)
       let current = headings[0]?.id ?? ''
 
       for (const heading of headings) {
@@ -995,7 +1002,7 @@ function Toc({
       return
     }
 
-    const offset = mobile ? 72 : 110
+    const offset = mobile ? 72 : 46
     const top = el.getBoundingClientRect().top + window.scrollY - offset
     window.scrollTo({ top, behavior: 'smooth' })
     onNavigate?.()
