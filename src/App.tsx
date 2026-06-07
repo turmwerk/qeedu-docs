@@ -46,6 +46,33 @@ const landingStats = [
   { value: '3', label: '版本路径', desc: 'Community、Cloud、Education' },
 ]
 
+const docsFlowSignals: Array<{ title: string; detail: string; metric: string; icon: IconComponent }> = [
+  {
+    title: '快速体验',
+    detail: 'Cloud 试用、核心概念、版本边界',
+    metric: 'Start',
+    icon: Cloud,
+  },
+  {
+    title: '部署路径',
+    detail: '社区自部署、私有化、环境变量',
+    metric: 'Deploy',
+    icon: DatabaseZap,
+  },
+  {
+    title: '校园试点',
+    detail: '试点手册、知识库初始化、成效指标',
+    metric: 'Pilot',
+    icon: School,
+  },
+  {
+    title: '安全复核',
+    detail: '数据边界、权限隔离、人工确认',
+    metric: 'Trust',
+    icon: ShieldCheck,
+  },
+]
+
 const quickStartCards: Array<{ title: string; desc: string; href: string; icon: IconComponent }> = [
   {
     title: '5 分钟试用 Cloud',
@@ -531,6 +558,30 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
                 <p>{item.desc}</p>
               </article>
             ))}
+          </div>
+          <div className="landing-flow-map" aria-label="文档任务流">
+            <div className="landing-flow-map__grid" aria-hidden="true">
+              {Array.from({ length: 18 }, (_, index) => (
+                <span key={`docs-flow-dot-${index}`} />
+              ))}
+            </div>
+            <div className="landing-flow-map__status">
+              <span>live map</span>
+              <strong>阅读到交付的文档链路</strong>
+            </div>
+            <div className="landing-flow-map__steps">
+              {docsFlowSignals.map((signal, index) => (
+                <article key={signal.title}>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <signal.icon size={17} />
+                  <div>
+                    <strong>{signal.title}</strong>
+                    <small>{signal.detail}</small>
+                  </div>
+                  <em>{signal.metric}</em>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
