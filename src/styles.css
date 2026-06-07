@@ -2602,6 +2602,185 @@ a {
   outline: none;
 }
 
+.float-controls {
+  position: fixed;
+  right: 4px;
+  bottom: 20px;
+  z-index: 80;
+  width: 48px;
+  pointer-events: none;
+}
+
+.float-controls__button {
+  position: absolute;
+  right: 0;
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(10, 10, 10, 0.82);
+  color: #e0e0e0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  pointer-events: auto;
+  text-decoration: none;
+  transition:
+    bottom 200ms ease,
+    transform 180ms ease,
+    opacity 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+:root[data-theme="light"] .float-controls__button {
+  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  color: #10221c;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.float-controls__button:hover,
+.float-controls__button:focus-visible {
+  border-color: rgba(31, 196, 31, 0.5);
+  color: #1fc41f;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.float-controls__top {
+  bottom: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.float-controls.is-top-hidden .float-controls__top {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.92);
+}
+
+.float-controls__settings {
+  bottom: 50px;
+  border-color: rgba(31, 196, 31, 0.18);
+  background: rgba(10, 10, 10, 0.74);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.float-controls.is-top-hidden .float-controls__settings {
+  bottom: 0;
+}
+
+.float-controls__settings svg {
+  animation: settings-spin 2s linear infinite;
+}
+
+.float-controls__settings:hover svg,
+.float-controls__settings:focus-visible svg {
+  animation: none;
+}
+
+.float-controls__opt-dynamic,
+.float-controls__opt-language,
+.float-controls__opt-theme {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px) scale(0.95);
+}
+
+.float-controls__opt-theme {
+  bottom: 100px;
+}
+
+.float-controls.is-top-hidden .float-controls__opt-theme {
+  bottom: 50px;
+}
+
+.float-controls__opt-language {
+  bottom: 150px;
+}
+
+.float-controls.is-top-hidden .float-controls__opt-language {
+  bottom: 100px;
+}
+
+.float-controls__opt-dynamic {
+  bottom: 200px;
+}
+
+.float-controls.is-top-hidden .float-controls__opt-dynamic {
+  bottom: 150px;
+}
+
+.float-controls__opt-dynamic.is-visible,
+.float-controls__opt-language.is-visible,
+.float-controls__opt-theme.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.float-controls__button.is-active {
+  border-color: rgba(31, 196, 31, 0.58);
+  background: rgba(31, 196, 31, 0.14);
+  color: #1fc41f;
+}
+
+.float-controls__langs {
+  position: absolute;
+  right: 54px;
+  bottom: 150px;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(8px);
+  transition:
+    bottom 200ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.float-controls.is-top-hidden .float-controls__langs {
+  bottom: 100px;
+}
+
+.float-controls__langs.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.float-controls__lang {
+  position: static;
+  flex: 0 0 auto;
+}
+
+:root.docs-simple-background .docs-app {
+  background:
+    linear-gradient(rgba(8, 61, 49, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 61, 49, 0.024) 1px, transparent 1px),
+    linear-gradient(180deg, #ffffff 0%, #f7fbf6 100%);
+  background-size: 32px 32px, 32px 32px, auto;
+}
+
+@keyframes settings-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1080px) {
   .docs-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -2780,6 +2959,24 @@ a {
     min-height: 30px;
     font-size: 12px;
     font-weight: 720;
+  }
+
+  .float-controls {
+    right: 4px;
+    bottom: 14px;
+  }
+
+  .float-controls__langs {
+    right: 54px;
+    bottom: 150px;
+    display: grid;
+    grid-template-columns: repeat(2, 44px);
+    gap: 8px;
+    justify-content: end;
+  }
+
+  .float-controls.is-top-hidden .float-controls__langs {
+    bottom: 100px;
   }
 
   .docs-layout {

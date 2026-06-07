@@ -24,6 +24,7 @@ import { useEffect, useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
+import { FloatControls } from './components/FloatControls'
 import './styles.css'
 
 const homeUrl = 'https://qeedu.tech'
@@ -431,6 +432,7 @@ function AppLayout() {
   return (
     <div className="docs-app">
       <DocsProgress />
+      <FloatControls />
       <MobileHeader
         onOpenNav={() => {
           setTocOpen(false)
