@@ -7,9 +7,14 @@ type Theme = 'dark' | 'light'
 const themeStorageKey = 'qeedu-docs-theme'
 const snowEffectStorageKey = 'qeedu-docs-snow-effect'
 
-const languageLinks = [
+const docsLanguageLinks = [
   { code: 'zh', label: 'CN', name: '简体中文', href: '/zh/getting-started/introduction' },
   { code: 'en', label: 'EN', name: 'English', href: '/en/getting-started/introduction' },
+]
+
+const landingLanguageLinks = [
+  { code: 'zh', label: 'CN', name: '简体中文', href: '/' },
+  { code: 'en', label: 'EN', name: 'English', href: '/en' },
 ]
 
 function readStoredTheme(): Theme {
@@ -227,7 +232,9 @@ export function FloatControls() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const activeLanguage = location.pathname.startsWith('/en/') ? 'en' : 'zh'
+  const isLandingPath = location.pathname === '/' || location.pathname === '/zh' || location.pathname === '/en'
+  const activeLanguage = location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'zh'
+  const languageLinks = isLandingPath ? landingLanguageLinks : docsLanguageLinks
 
   return (
     <>

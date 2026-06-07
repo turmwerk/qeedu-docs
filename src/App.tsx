@@ -38,14 +38,76 @@ type DocPage = {
 }
 
 type IconComponent = React.ComponentType<{ size?: number }>
+type LandingLanguage = 'zh' | 'en'
+type LandingStat = { value: string; label: string; desc: string }
+type LandingFlowSignal = { title: string; detail: string; metric: string; icon: IconComponent }
+type LandingQuickCard = { title: string; desc: string; href: string; icon: IconComponent }
+type LandingProductTrack = {
+  title: string
+  subtitle: string
+  desc: string
+  icon: IconComponent
+  href: string
+  accent: 'blue' | 'mint' | 'amber' | 'violet' | 'coral'
+  modules: string[]
+}
+type LandingDeliveryLane = { title: string; desc: string; icon: IconComponent; href: string }
+type LandingHeading = { text: string; id: string }
+type LandingCommandRun = {
+  title: string
+  command: string
+  detail: string
+  accent: 'mint' | 'blue' | 'amber' | 'violet'
+  icon: IconComponent
+  steps: string[]
+  outputs: string[]
+}
+type LandingReadingPath = {
+  title: string
+  desc: string
+  icon: IconComponent
+  accent: 'mint' | 'blue' | 'amber' | 'violet'
+  docs: Array<{ label: string; href: string; note: string }>
+  outcome: string
+  checks: string[]
+}
+type LandingCopy = {
+  stats: LandingStat[]
+  flowSignals: LandingFlowSignal[]
+  quickStartCards: LandingQuickCard[]
+  productTracks: LandingProductTrack[]
+  deliveryLanes: LandingDeliveryLane[]
+  headings: LandingHeading[]
+  commandRuns: LandingCommandRun[]
+  readingPaths: LandingReadingPath[]
+  hero: {
+    pill: string
+    title: string
+    description: string
+    primaryAction: string
+    secondaryAction: string
+    coverageTitle: string
+    pageCountLabel: string
+    groupCountLabel: string
+    flowStatusLabel: string
+    flowStatusTitle: string
+  }
+  start: { eyebrow: string; title: string; cta: string }
+  command: { aria: string; eyebrow: string; title: string; description: string; pageLabel: string; groupLabel: string; routeLabel: string }
+  reading: { aria: string; eyebrow: string; title: string }
+  track: { aria: string; cta: string }
+  delivery: { eyebrow: string; title: string }
+  aside: { aria: string; progress: string }
+  route: { center: string; home: string; href: string }
+}
 
-const landingStats = [
+const landingStats: LandingStat[] = [
   { value: '5', label: '产品线', desc: '助国际、助教、助管、助研、助学' },
   { value: '20+', label: '场景模块', desc: '来自 edu-ai 的真实模块目录' },
   { value: '3', label: '版本路径', desc: 'Community、Cloud、Education' },
 ]
 
-const docsFlowSignals: Array<{ title: string; detail: string; metric: string; icon: IconComponent }> = [
+const docsFlowSignals: LandingFlowSignal[] = [
   {
     title: '快速体验',
     detail: 'Cloud 试用、核心概念、版本边界',
@@ -72,7 +134,7 @@ const docsFlowSignals: Array<{ title: string; detail: string; metric: string; ic
   },
 ]
 
-const quickStartCards: Array<{ title: string; desc: string; href: string; icon: IconComponent }> = [
+const quickStartCards: LandingQuickCard[] = [
   {
     title: '5 分钟试用 Cloud',
     desc: '先从云端体验登录、选择场景、输入任务、查看 AI 输出和人工确认。',
@@ -93,15 +155,7 @@ const quickStartCards: Array<{ title: string; desc: string; href: string; icon: 
   },
 ]
 
-const productTracks: Array<{
-  title: string
-  subtitle: string
-  desc: string
-  icon: IconComponent
-  href: string
-  accent: 'blue' | 'mint' | 'amber' | 'violet' | 'coral'
-  modules: string[]
-}> = [
+const productTracks: LandingProductTrack[] = [
   {
     title: '助国际',
     subtitle: '交换申请、派出支持、返校沉淀',
@@ -149,7 +203,7 @@ const productTracks: Array<{
   },
 ]
 
-const deliveryLanes: Array<{ title: string; desc: string; icon: IconComponent; href: string }> = [
+const deliveryLanes: LandingDeliveryLane[] = [
   {
     title: '数据边界',
     desc: '区分 Cloud 体验、社区自部署和教育版私有化环境，明确哪些数据适合进入 AI 流程。',
@@ -170,22 +224,14 @@ const deliveryLanes: Array<{ title: string; desc: string; icon: IconComponent; h
   },
 ]
 
-const landingHeadings = [
+const landingHeadings: LandingHeading[] = [
   { text: '快速开始', id: 'start-here' },
   { text: '阅读路径', id: 'reading-paths' },
   { text: '产品线地图', id: 'product-tracks' },
   { text: '试点与交付', id: 'delivery-docs' },
 ]
 
-const docsCommandRuns: Array<{
-  title: string
-  command: string
-  detail: string
-  accent: 'mint' | 'blue' | 'amber' | 'violet'
-  icon: IconComponent
-  steps: string[]
-  outputs: string[]
-}> = [
+const docsCommandRuns: LandingCommandRun[] = [
   {
     title: '新用户快速试用',
     command: 'cloud.run --path quick-start',
@@ -224,15 +270,7 @@ const docsCommandRuns: Array<{
   },
 ]
 
-const readingPaths: Array<{
-  title: string
-  desc: string
-  icon: IconComponent
-  accent: 'mint' | 'blue' | 'amber' | 'violet'
-  docs: Array<{ label: string; href: string; note: string }>
-  outcome: string
-  checks: string[]
-}> = [
+const readingPaths: LandingReadingPath[] = [
   {
     title: 'Cloud 快速试用',
     desc: '面向第一次接触 QeEdu 的用户，先跑通登录、场景选择、任务输入和结果确认。',
@@ -286,6 +324,310 @@ const readingPaths: Array<{
     checks: ['权限隔离', '日志留痕', '人工复核'],
   },
 ]
+
+const landingStatsEn: LandingStat[] = [
+  { value: '5', label: 'product lines', desc: 'International, teaching, admin, research, and student support' },
+  { value: '20+', label: 'scenario modules', desc: 'Mapped from the real edu-ai module catalog' },
+  { value: '3', label: 'edition paths', desc: 'Community, Cloud, and Education editions' },
+]
+
+const docsFlowSignalsEn: LandingFlowSignal[] = [
+  {
+    title: 'Product trial',
+    detail: 'Cloud trial, core concepts, edition boundaries',
+    metric: 'Start',
+    icon: Cloud,
+  },
+  {
+    title: 'Deployment path',
+    detail: 'Self-hosting, private deployment, environment variables',
+    metric: 'Deploy',
+    icon: DatabaseZap,
+  },
+  {
+    title: 'Campus pilot',
+    detail: 'Pilot playbook, knowledge base setup, success metrics',
+    metric: 'Pilot',
+    icon: School,
+  },
+  {
+    title: 'Security review',
+    detail: 'Data boundary, access isolation, human confirmation',
+    metric: 'Trust',
+    icon: ShieldCheck,
+  },
+]
+
+const quickStartCardsEn: LandingQuickCard[] = [
+  {
+    title: 'Try Cloud in 5 minutes',
+    desc: 'Start from login, scenario selection, task input, AI output, and human confirmation.',
+    href: '/en/getting-started/introduction',
+    icon: Cloud,
+  },
+  {
+    title: 'Understand core concepts',
+    desc: 'Clarify agents, knowledge bases, templates, workflows, review steps, and deployment boundaries.',
+    href: '/zh/getting-started/key-concepts',
+    icon: Layers3,
+  },
+  {
+    title: 'Plan an education pilot',
+    desc: 'Choose low-risk recurring tasks, then define pilot teams, knowledge scope, metrics, and deliverables.',
+    href: '/zh/delivery/pilot-playbook',
+    icon: Rocket,
+  },
+]
+
+const productTracksEn: LandingProductTrack[] = [
+  {
+    title: 'International Office',
+    subtitle: 'Exchange applications, outbound support, returnee handoff',
+    desc: 'Maps to edu-ai international exchange modules across program discovery, matching, workflow support, multilingual communication, and pre/post-trip assistance.',
+    icon: School,
+    href: '/zh/scenarios/students',
+    accent: 'blue',
+    modules: ['Program hub', 'Program matching', 'Workflow assistant', 'Email assistant', 'Pre-departure', 'Cross-cultural training', 'Overseas support', 'Return handoff', 'Inbound support'],
+  },
+  {
+    title: 'Teaching',
+    subtitle: 'Syllabi, exams, assignment feedback',
+    desc: 'Turns learning goals, question banks, rubrics, and feedback drafts into reusable teaching templates.',
+    icon: GraduationCap,
+    href: '/zh/scenarios/teachers',
+    accent: 'mint',
+    modules: ['Syllabus generation', 'Exam design', 'Assignment review'],
+  },
+  {
+    title: 'Administration',
+    subtitle: 'Services, notices, materials, timelines',
+    desc: 'Connects process guidance, announcements, form management, student Q&A, dashboards, and time-node tracking for staff workflows.',
+    icon: Building2,
+    href: '/zh/scenarios/administration',
+    accent: 'amber',
+    modules: ['Service assistant', 'Notice drafting', 'Forms and materials', 'Student Q&A', 'Analytics dashboard', 'Timeline manager'],
+  },
+  {
+    title: 'Research',
+    subtitle: 'Search, deep reading, writing',
+    desc: 'Organizes search prompts, screening notes, structured reading cards, evidence matrices, and draft sections for research work.',
+    icon: BrainCircuit,
+    href: '/zh/scenarios/teachers',
+    accent: 'violet',
+    modules: ['Literature search', 'Paper reading', 'Paper writing'],
+  },
+  {
+    title: 'Student Success',
+    subtitle: 'Resources, progress, planning',
+    desc: 'Turns school resources, training plans, credit progress, and goal profiles into staged student actions.',
+    icon: Users,
+    href: '/zh/scenarios/students',
+    accent: 'coral',
+    modules: ['Resource packs', 'Progress radar', 'Career planning'],
+  },
+]
+
+const deliveryLanesEn: LandingDeliveryLane[] = [
+  {
+    title: 'Data boundary',
+    desc: 'Separate Cloud trials, team self-hosting, and private education deployments before deciding what data enters AI workflows.',
+    icon: ShieldCheck,
+    href: '/zh/security/data-boundary',
+  },
+  {
+    title: 'Knowledge base setup',
+    desc: 'Prepare policies, templates, FAQs, historical cases, and course materials as searchable and reusable context.',
+    icon: DatabaseZap,
+    href: '/zh/delivery/knowledge-base-init',
+  },
+  {
+    title: 'Success metrics',
+    desc: 'Use generation time, edit ratio, reuse, feedback, and review records to judge whether a pilot should expand.',
+    icon: Check,
+    href: '/zh/delivery/success-metrics',
+  },
+]
+
+const landingHeadingsEn: LandingHeading[] = [
+  { text: 'Start here', id: 'start-here' },
+  { text: 'Reading paths', id: 'reading-paths' },
+  { text: 'Product tracks', id: 'product-tracks' },
+  { text: 'Pilot and delivery', id: 'delivery-docs' },
+]
+
+const docsCommandRunsEn: LandingCommandRun[] = [
+  {
+    title: 'Cloud trial',
+    command: 'cloud.run --path quick-start',
+    detail: 'Connect Cloud entry, quick start, core concepts, and review notes into the shortest first demo path.',
+    accent: 'mint',
+    icon: Cloud,
+    steps: ['Open Cloud', 'Choose scenario', 'Confirm boundaries'],
+    outputs: ['Quick start', 'Core concepts', 'Cloud edition'],
+  },
+  {
+    title: 'Self-host deploy',
+    command: 'deploy.trace --env gateway',
+    detail: 'Link repository setup, environment variables, model gateway, and Cloudflare Pages release steps for troubleshooting.',
+    accent: 'blue',
+    icon: Github,
+    steps: ['Clone repo', 'Configure gateway', 'Publish frontend'],
+    outputs: ['Deployment overview', 'Community self-hosting', 'Environment variables'],
+  },
+  {
+    title: 'Pilot prep',
+    command: 'pilot.plan --scope college',
+    detail: 'Put low-risk scenarios, knowledge base setup, training delivery, and acceptance metrics into one pilot preparation path.',
+    accent: 'amber',
+    icon: School,
+    steps: ['Select pilot team', 'Prepare school context', 'Define metrics'],
+    outputs: ['Pilot playbook', 'Knowledge base setup', 'Education package'],
+  },
+  {
+    title: 'Security review',
+    command: 'trust.review --human-in-loop',
+    detail: 'Prepare answers around data boundaries, access isolation, audit logs, and human review responsibilities.',
+    accent: 'violet',
+    icon: ShieldCheck,
+    steps: ['Map data boundary', 'Confirm access isolation', 'Keep review logs'],
+    outputs: ['Data boundary', 'Private deployment', 'Success metrics'],
+  },
+]
+
+const readingPathsEn: LandingReadingPath[] = [
+  {
+    title: 'Cloud Trial',
+    desc: 'For first-time QeEdu users: complete login, scenario selection, task input, and result confirmation.',
+    icon: Cloud,
+    accent: 'mint',
+    docs: [
+      { label: 'English intro', href: '/en/getting-started/introduction', note: 'Understand the documentation entry point' },
+      { label: 'Quick start', href: '/zh/getting-started/quick-start', note: 'Complete the first task in minutes' },
+      { label: 'Cloud edition', href: '/zh/editions/cloud', note: 'Clarify hosted service boundaries' },
+    ],
+    outcome: 'You can run a first Cloud demo and know which outputs require human confirmation.',
+    checks: ['Account and space', 'Sample task', 'Export result'],
+  },
+  {
+    title: 'Self-hosting',
+    desc: 'For developers and student teams: move from repo setup to model config and Cloudflare Pages release.',
+    icon: Github,
+    accent: 'blue',
+    docs: [
+      { label: 'Deployment overview', href: '/zh/deployment/overview', note: 'Understand frontend, backend, and gateway layers' },
+      { label: 'Community self-hosting', href: '/zh/deployment/community-self-hosting', note: 'Run locally or on a server' },
+      { label: 'Environment variables', href: '/zh/deployment/environment-variables', note: 'Configure models, domains, and storage' },
+    ],
+    outcome: 'You can bring up the community edition and know where to troubleshoot model and frontend issues.',
+    checks: ['Repo clone', 'Model gateway', 'Frontend release'],
+  },
+  {
+    title: 'Education Pilot',
+    desc: 'For colleges, labs, and innovation programs: define low-risk scenarios before packaging local knowledge.',
+    icon: School,
+    accent: 'amber',
+    docs: [
+      { label: 'Pilot playbook', href: '/zh/delivery/pilot-playbook', note: 'Define team, scenarios, and metrics' },
+      { label: 'Education package', href: '/zh/delivery/education-package', note: 'Deployment, templates, training, review' },
+      { label: 'Knowledge base setup', href: '/zh/delivery/knowledge-base-init', note: 'Prepare policies, templates, FAQs, cases' },
+    ],
+    outcome: 'You can turn a broad AI trial idea into pilot scope, deliverables, and acceptance criteria.',
+    checks: ['Pilot boundary', 'School context', 'Success metrics'],
+  },
+  {
+    title: 'Security Review',
+    desc: 'For managers and technical owners: explain data boundaries, permissions, logs, model access, and review controls.',
+    icon: ShieldCheck,
+    accent: 'violet',
+    docs: [
+      { label: 'Data boundary', href: '/zh/security/data-boundary', note: 'Separate Cloud, team, and private data' },
+      { label: 'Private deployment', href: '/zh/deployment/private-deployment', note: 'Campus environment and model gateway' },
+      { label: 'Success metrics', href: '/zh/delivery/success-metrics', note: 'Review calls, revisions, and feedback' },
+    ],
+    outcome: 'You can answer common security, responsibility, and review questions before a pilot starts.',
+    checks: ['Access isolation', 'Audit logs', 'Human review'],
+  },
+]
+
+const landingCopyByLang: Record<LandingLanguage, LandingCopy> = {
+  zh: {
+    stats: landingStats,
+    flowSignals: docsFlowSignals,
+    quickStartCards,
+    productTracks,
+    deliveryLanes,
+    headings: landingHeadings,
+    commandRuns: docsCommandRuns,
+    readingPaths,
+    hero: {
+      pill: 'QeEdu Docs',
+      title: '从产品体验到校园试点，文档按真实交付路径组织',
+      description:
+        '这里不只是功能说明，而是把 edu-ai 项目里的助国际、助教、助管、助研、助学模块，拆成快速开始、场景说明、部署安全和试点交付四类文档入口。',
+      primaryAction: '打开 Cloud',
+      secondaryAction: '返回官网',
+      coverageTitle: 'Docs Coverage',
+      pageCountLabel: '文档页',
+      groupCountLabel: '个导航分组',
+      flowStatusLabel: 'live map',
+      flowStatusTitle: '阅读到交付的文档链路',
+    },
+    start: { eyebrow: 'Start Here', title: '先读这三类文档', cta: '进入文档' },
+    command: {
+      aria: '文档操作态势',
+      eyebrow: 'Docs Command',
+      title: '把阅读入口组织成可执行的文档任务',
+      description: '每条路线都对应一个实际交付动作：试用、部署、试点或安全复核。用户不需要在目录里盲找，先选目标，再进入文档链路。',
+      pageLabel: '文档页',
+      groupLabel: '导航分组',
+      routeLabel: '任务路线',
+    },
+    reading: { aria: '文档阅读路径', eyebrow: 'Reading Paths', title: '按目标选择阅读路线' },
+    track: { aria: 'edu-ai 产品线文档地图', cta: '查看相关场景' },
+    delivery: { eyebrow: 'Delivery', title: '试点、部署、安全要一起读' },
+    aside: { aria: '文档路线', progress: 'Docs Map' },
+    route: { center: '文档中心', home: '首页', href: '/' },
+  },
+  en: {
+    stats: landingStatsEn,
+    flowSignals: docsFlowSignalsEn,
+    quickStartCards: quickStartCardsEn,
+    productTracks: productTracksEn,
+    deliveryLanes: deliveryLanesEn,
+    headings: landingHeadingsEn,
+    commandRuns: docsCommandRunsEn,
+    readingPaths: readingPathsEn,
+    hero: {
+      pill: 'QeEdu Docs',
+      title: 'From product trial to campus pilot, docs follow the real delivery path',
+      description:
+        'This is more than a feature list. QeEdu Docs turns the edu-ai modules for international affairs, teaching, administration, research, and student support into entry points for quick starts, scenarios, deployment, security, and pilot delivery.',
+      primaryAction: 'Open Cloud',
+      secondaryAction: 'Back to website',
+      coverageTitle: 'Docs Coverage',
+      pageCountLabel: 'docs',
+      groupCountLabel: 'navigation groups',
+      flowStatusLabel: 'live map',
+      flowStatusTitle: 'Documentation path from reading to delivery',
+    },
+    start: { eyebrow: 'Start Here', title: 'Read these three entry points first', cta: 'Open doc' },
+    command: {
+      aria: 'Documentation command center',
+      eyebrow: 'Docs Command',
+      title: 'Turn reading entry points into executable documentation tasks',
+      description:
+        'Every route maps to a real delivery action: trial, deployment, pilot, or security review. Users choose a target first, then enter the documentation chain instead of hunting through the sidebar.',
+      pageLabel: 'docs',
+      groupLabel: 'nav groups',
+      routeLabel: 'task routes',
+    },
+    reading: { aria: 'Documentation reading paths', eyebrow: 'Reading Paths', title: 'Choose a reading path by goal' },
+    track: { aria: 'edu-ai product track documentation map', cta: 'View related scenario' },
+    delivery: { eyebrow: 'Delivery', title: 'Read pilot, deployment, and security together' },
+    aside: { aria: 'Documentation routes', progress: 'Docs Map' },
+    route: { center: 'Docs Center', home: 'Home', href: '/en' },
+  },
+}
 
 const groups = [
   {
@@ -491,9 +833,11 @@ function AppLayout() {
 
   const location = useLocation()
   const previousPath = useRef(location.pathname)
-  const isLanding = location.pathname === '/'
+  const isLanding = location.pathname === '/' || location.pathname === '/zh' || location.pathname === '/en'
+  const landingLanguage: LandingLanguage = location.pathname.startsWith('/en') ? 'en' : 'zh'
+  const landingCopy = landingCopyByLang[landingLanguage]
   const current = pages.find((page) => `/${page.slug}` === location.pathname) ?? fallbackPage
-  const headings = isLanding ? landingHeadings : getHeadings(current.content)
+  const headings = isLanding ? landingCopy.headings : getHeadings(current.content)
   const [navOpen, setNavOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
 
@@ -550,7 +894,7 @@ function AppLayout() {
           setTocOpen(true)
         }}
       />
-      <RoutePathBar key={location.pathname} isLanding={isLanding} page={current} />
+      <RoutePathBar key={location.pathname} isLanding={isLanding} landingCopy={landingCopy} page={current} />
 
       {(navOpen || tocOpen) && (
         <button className="drawer-overlay" type="button" aria-label="关闭菜单" onClick={closeDrawers} />
@@ -570,7 +914,9 @@ function AppLayout() {
         <main className="content">
           <div className="content__page" key={location.pathname}>
             <Routes>
-              <Route path="/" element={<DocsLanding pageCount={pages.length} groupCount={groups.length} />} />
+              <Route path="/" element={<DocsLanding lang="zh" pageCount={pages.length} groupCount={groups.length} />} />
+              <Route path="/zh" element={<DocsLanding lang="zh" pageCount={pages.length} groupCount={groups.length} />} />
+              <Route path="/en" element={<DocsLanding lang="en" pageCount={pages.length} groupCount={groups.length} />} />
               {pages.map((page) => (
                 <Route key={page.slug} path={`/${page.slug}`} element={<DocArticle page={page} />} />
               ))}
@@ -579,7 +925,7 @@ function AppLayout() {
           </div>
         </main>
 
-        {isLanding ? <DocsLandingAside /> : <Toc headings={headings} />}
+        {isLanding ? <DocsLandingAside copy={landingCopy} /> : <Toc headings={headings} />}
       </div>
     </div>
   )
@@ -610,48 +956,50 @@ function DocsProgress() {
   )
 }
 
-function DocsLandingAside() {
+function DocsLandingAside({ copy }: { copy: LandingCopy }) {
   return (
-    <aside className="landing-aside" aria-label="文档路线">
+    <aside className="landing-aside" aria-label={copy.aside.aria}>
       <div className="landing-aside__progress">
         <span />
-        <strong>Docs Map</strong>
+        <strong>{copy.aside.progress}</strong>
       </div>
-      <a href="#start-here">快速开始</a>
-      <a href="#reading-paths">阅读路径</a>
-      <a href="#product-tracks">产品线地图</a>
-      <a href="#delivery-docs">试点与交付</a>
+      {copy.headings.map((heading) => (
+        <a href={`#${heading.id}`} key={heading.id}>
+          {heading.text}
+        </a>
+      ))}
     </aside>
   )
 }
 
-function RoutePathBar({ page, isLanding }: { page: DocPage; isLanding: boolean }) {
+function RoutePathBar({ page, isLanding, landingCopy }: { page: DocPage; isLanding: boolean; landingCopy: LandingCopy }) {
   const groupStartSlug = groups.find((group) => group.title === page.group)?.pages[0]
-  const groupHref = isLanding || !groupStartSlug ? '/' : `/${groupStartSlug}`
-  const pageHref = isLanding ? '/' : `/${page.slug}`
+  const groupHref = isLanding || !groupStartSlug ? landingCopy.route.href : `/${groupStartSlug}`
+  const pageHref = isLanding ? landingCopy.route.href : `/${page.slug}`
 
   return (
     <nav className="route-path" aria-label="当前页面路径">
-      <Link to={groupHref}>{isLanding ? '文档中心' : page.group}</Link>
+      <Link to={groupHref}>{isLanding ? landingCopy.route.center : page.group}</Link>
       <ChevronRight size={14} />
       <Link aria-current="page" className="route-path__current" to={pageHref}>
-        {isLanding ? '首页' : page.title}
+        {isLanding ? landingCopy.route.home : page.title}
       </Link>
     </nav>
   )
 }
 
-function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount: number }) {
+function DocsLanding({ lang, pageCount, groupCount }: { lang: LandingLanguage; pageCount: number; groupCount: number }) {
+  const copy = landingCopyByLang[lang]
   const [activeTrackIndex, setActiveTrackIndex] = useState(0)
-  const activeTrack = productTracks[activeTrackIndex]
+  const activeTrack = copy.productTracks[activeTrackIndex]
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setActiveTrackIndex((index) => (index + 1) % productTracks.length)
+      setActiveTrackIndex((index) => (index + 1) % copy.productTracks.length)
     }, 2800)
 
     return () => window.clearInterval(timer)
-  }, [])
+  }, [copy.productTracks.length])
 
   return (
     <article className="docs-landing">
@@ -659,21 +1007,18 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         <div>
           <span className="landing-pill">
             <Sparkles size={16} />
-            QeEdu Docs
+            {copy.hero.pill}
           </span>
-          <h1>从产品体验到校园试点，文档按真实交付路径组织</h1>
-          <p>
-            这里不只是功能说明，而是把 edu-ai 项目里的助国际、助教、助管、助研、助学模块，
-            拆成快速开始、场景说明、部署安全和试点交付四类文档入口。
-          </p>
+          <h1>{copy.hero.title}</h1>
+          <p>{copy.hero.description}</p>
           <div className="landing-actions">
             <a className="landing-primary" href={cloudUrl}>
               <Cloud size={18} />
-              打开 Cloud
+              {copy.hero.primaryAction}
             </a>
             <a className="landing-secondary" href={homeUrl}>
               <Home size={18} />
-              返回官网
+              {copy.hero.secondaryAction}
             </a>
           </div>
         </div>
@@ -682,10 +1027,10 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
             <span />
             <span />
             <span />
-            <strong>Docs Coverage</strong>
+            <strong>{copy.hero.coverageTitle}</strong>
           </div>
           <div className="landing-stats">
-            {[...landingStats, { value: String(pageCount), label: '文档页', desc: `${groupCount} 个导航分组` }].map((item) => (
+            {[...copy.stats, { value: String(pageCount), label: copy.hero.pageCountLabel, desc: `${groupCount} ${copy.hero.groupCountLabel}` }].map((item) => (
               <article key={item.label}>
                 <strong>{item.value}</strong>
                 <span>{item.label}</span>
@@ -700,11 +1045,11 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
               ))}
             </div>
             <div className="landing-flow-map__status">
-              <span>live map</span>
-              <strong>阅读到交付的文档链路</strong>
+              <span>{copy.hero.flowStatusLabel}</span>
+              <strong>{copy.hero.flowStatusTitle}</strong>
             </div>
             <div className="landing-flow-map__steps">
-              {docsFlowSignals.map((signal, index) => (
+              {copy.flowSignals.map((signal, index) => (
                 <article key={signal.title}>
                   <span>{String(index + 1).padStart(2, '0')}</span>
                   <signal.icon size={17} />
@@ -720,21 +1065,21 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         </div>
       </section>
 
-      <DocsCommandCenter pageCount={pageCount} groupCount={groupCount} />
+      <DocsCommandCenter copy={copy} pageCount={pageCount} groupCount={groupCount} />
 
       <section className="landing-section" id="start-here">
         <div className="landing-section__head">
-          <span>Start Here</span>
-          <h2>先读这三类文档</h2>
+          <span>{copy.start.eyebrow}</span>
+          <h2>{copy.start.title}</h2>
         </div>
         <div className="quick-card-grid">
-          {quickStartCards.map((card) => (
+          {copy.quickStartCards.map((card) => (
             <Link className="quick-card" key={card.title} to={card.href}>
               <card.icon size={22} />
               <h3>{card.title}</h3>
               <p>{card.desc}</p>
               <span>
-                进入文档
+                {copy.start.cta}
                 <ChevronRight size={15} />
               </span>
             </Link>
@@ -742,11 +1087,11 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
         </div>
       </section>
 
-      <ReadingPathLab />
+      <ReadingPathLab copy={copy} />
 
-      <section className={`track-lab accent-${activeTrack.accent}`} id="product-tracks" aria-label="edu-ai 产品线文档地图">
+      <section className={`track-lab accent-${activeTrack.accent}`} id="product-tracks" aria-label={copy.track.aria}>
         <div className="track-lab__nav">
-          {productTracks.map((track, index) => (
+          {copy.productTracks.map((track, index) => (
             <button
               className={index === activeTrackIndex ? 'active' : undefined}
               key={track.title}
@@ -764,7 +1109,7 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
             <h2>{activeTrack.title}</h2>
             <p>{activeTrack.desc}</p>
             <Link to={activeTrack.href}>
-              查看相关场景
+              {copy.track.cta}
               <ChevronRight size={16} />
             </Link>
           </div>
@@ -781,11 +1126,11 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
 
       <section className="delivery-lanes" id="delivery-docs">
         <div className="landing-section__head">
-          <span>Delivery</span>
-          <h2>试点、部署、安全要一起读</h2>
+          <span>{copy.delivery.eyebrow}</span>
+          <h2>{copy.delivery.title}</h2>
         </div>
         <div className="delivery-lane-grid">
-          {deliveryLanes.map((lane) => (
+          {copy.deliveryLanes.map((lane) => (
             <Link className="delivery-lane" key={lane.title} to={lane.href}>
               <lane.icon size={22} />
               <h3>{lane.title}</h3>
@@ -798,36 +1143,36 @@ function DocsLanding({ pageCount, groupCount }: { pageCount: number; groupCount:
   )
 }
 
-function DocsCommandCenter({ pageCount, groupCount }: { pageCount: number; groupCount: number }) {
+function DocsCommandCenter({ copy, pageCount, groupCount }: { copy: LandingCopy; pageCount: number; groupCount: number }) {
   const [activeRunIndex, setActiveRunIndex] = useState(0)
-  const activeRun = docsCommandRuns[activeRunIndex]
+  const activeRun = copy.commandRuns[activeRunIndex]
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setActiveRunIndex((index) => (index + 1) % docsCommandRuns.length)
+      setActiveRunIndex((index) => (index + 1) % copy.commandRuns.length)
     }, 3400)
 
     return () => window.clearInterval(timer)
-  }, [])
+  }, [copy.commandRuns.length])
 
   return (
-    <section className={`docs-command-center accent-${activeRun.accent}`} aria-label="文档操作态势">
+    <section className={`docs-command-center accent-${activeRun.accent}`} aria-label={copy.command.aria}>
       <div className="docs-command-center__copy">
-        <span>Docs Command</span>
-        <h2>把阅读入口组织成可执行的文档任务</h2>
-        <p>每条路线都对应一个实际交付动作：试用、部署、试点或安全复核。用户不需要在目录里盲找，先选目标，再进入文档链路。</p>
+        <span>{copy.command.eyebrow}</span>
+        <h2>{copy.command.title}</h2>
+        <p>{copy.command.description}</p>
         <div className="docs-command-center__metrics">
           <strong>
             {pageCount}
-            <small>文档页</small>
+            <small>{copy.command.pageLabel}</small>
           </strong>
           <strong>
             {groupCount}
-            <small>导航分组</small>
+            <small>{copy.command.groupLabel}</small>
           </strong>
           <strong>
-            {docsCommandRuns.length}
-            <small>任务路线</small>
+            {copy.commandRuns.length}
+            <small>{copy.command.routeLabel}</small>
           </strong>
         </div>
       </div>
@@ -844,7 +1189,7 @@ function DocsCommandCenter({ pageCount, groupCount }: { pageCount: number; group
           ))}
         </div>
         <div className="docs-command-center__tabs">
-          {docsCommandRuns.map((run, index) => (
+          {copy.commandRuns.map((run, index) => (
             <button
               className={index === activeRunIndex ? 'active' : undefined}
               key={run.title}
@@ -882,19 +1227,19 @@ function DocsCommandCenter({ pageCount, groupCount }: { pageCount: number; group
   )
 }
 
-function ReadingPathLab() {
+function ReadingPathLab({ copy }: { copy: LandingCopy }) {
   const [activePathIndex, setActivePathIndex] = useState(0)
-  const activePath = readingPaths[activePathIndex]
+  const activePath = copy.readingPaths[activePathIndex]
 
   return (
-    <section className={`reading-path-lab accent-${activePath.accent}`} id="reading-paths" aria-label="文档阅读路径">
+    <section className={`reading-path-lab accent-${activePath.accent}`} id="reading-paths" aria-label={copy.reading.aria}>
       <div className="landing-section__head">
-        <span>Reading Paths</span>
-        <h2>按目标选择阅读路线</h2>
+        <span>{copy.reading.eyebrow}</span>
+        <h2>{copy.reading.title}</h2>
       </div>
       <div className="reading-path-lab__shell">
         <div className="reading-path-lab__nav">
-          {readingPaths.map((path, index) => (
+          {copy.readingPaths.map((path, index) => (
             <button
               className={index === activePathIndex ? 'active' : undefined}
               key={path.title}
